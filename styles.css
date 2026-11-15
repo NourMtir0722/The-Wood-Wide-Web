@@ -1,0 +1,2429 @@
+/* =============================================================================
+   THE WOOD WIDE WEB — game UI
+   Materials: carved mossy stone (HUD, journal, tablets), glowing runes (selected
+   states, titles), parchment (codex entries, riddle answers).
+   ============================================================================= */
+
+:root {
+  color-scheme: dark;
+
+  /* World */
+  --ink-0: #030907;
+  --ink-1: #06110d;
+  --ink-2: #0b1a15;
+
+  /* Stone */
+  --stone-hi: #34443f;
+  --stone-1: #283531;
+  --stone-2: #1d2825;
+  --stone-3: #151e1b;
+  --stone-edge: #070c0a;
+
+  /* Moss */
+  --moss-dark: #24461f;
+  --moss: #4f7d31;
+  --moss-light: #9fc457;
+
+  /* Light */
+  --rune: #8ef7e2;
+  --rune-strong: #d9fff6;
+  --rune-glow: rgb(110 240 214 / 0.55);
+  --rune-faint: rgb(142 247 226 / 0.18);
+  --ember: #ffc96a;
+  --ember-deep: #e38a2c;
+  --ember-glow: rgb(255 190 90 / 0.55);
+
+  /* Text */
+  --parch: #efe6cf;
+  --parch-2: #d6cdb4;
+  --parch-dim: #a9a28b;
+  --ink-text: #36291a;
+
+  /* Nutrients */
+  --sugar: #ffc24d;
+  --mineral: #5cc9ff;
+  --alarm: #ff8a3d;
+
+  /* Type */
+  --font-logo: "Uncial Antiqua", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-carved: "Marcellus SC", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-lore: "Alegreya", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+
+  /* Layout */
+  --edge: clamp(12px, 1.6vw, 22px);
+  --hud-h: 76px;
+  --journal-w: clamp(330px, 27vw, 408px);
+
+  /* Textures */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .8 0 0 0 0 .86 0 0 0 0 .78 .62 0 0 0 -.25'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --mottle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.011' numOctaves='4' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .02 0 0 0 0 .05 0 0 0 0 .04 1.6 0 0 0 -.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E");
+  --moss-drape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 280 48'%3E%3Cpath d='M40 33q2 6 0 10M118 34q-2 6 1 10M196 33q2 5 0 8' stroke='%2324461f' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3Cg fill='%2318331a'%3E%3Ccircle cx='127.0' cy='27.7' r='7.2'/%3E%3Ccircle cx='130.7' cy='28.0' r='6.1'/%3E%3Ccircle cx='54.2' cy='32.7' r='4.4'/%3E%3Ccircle cx='219.7' cy='33.5' r='4.1'/%3E%3Ccircle cx='28.7' cy='29.1' r='5.3'/%3E%3Ccircle cx='15.4' cy='31.1' r='5.3'/%3E%3Ccircle cx='181.9' cy='30.2' r='3.8'/%3E%3Ccircle cx='8.1' cy='32.9' r='2.9'/%3E%3Ccircle cx='55.7' cy='33.3' r='2.9'/%3E%3Ccircle cx='130.2' cy='28.8' r='7.0'/%3E%3Ccircle cx='145.2' cy='31.3' r='4.4'/%3E%3Ccircle cx='184.2' cy='30.9' r='4.2'/%3E%3Ccircle cx='274.8' cy='32.9' r='4.3'/%3E%3Ccircle cx='89.8' cy='32.5' r='4.2'/%3E%3Ccircle cx='23.1' cy='30.7' r='4.1'/%3E%3Ccircle cx='234.3' cy='32.1' r='5.8'/%3E%3Ccircle cx='234.5' cy='34.0' r='3.7'/%3E%3Ccircle cx='131.8' cy='22.5' r='5.4'/%3E%3Ccircle cx='23.9' cy='31.1' r='5.2'/%3E%3Ccircle cx='77.4' cy='33.7' r='3.8'/%3E%3Ccircle cx='266.2' cy='31.9' r='3.1'/%3E%3Ccircle cx='71.0' cy='33.5' r='3.3'/%3E%3Ccircle cx='220.8' cy='33.0' r='4.8'/%3E%3Ccircle cx='125.7' cy='31.9' r='6.5'/%3E%3Ccircle cx='39.6' cy='29.9' r='3.7'/%3E%3Ccircle cx='118.4' cy='31.9' r='4.7'/%3E%3Ccircle cx='268.1' cy='31.9' r='3.6'/%3E%3Ccircle cx='244.7' cy='33.7' r='3.6'/%3E%3Ccircle cx='236.4' cy='31.2' r='3.3'/%3E%3Ccircle cx='273.1' cy='33.6' r='3.3'/%3E%3Ccircle cx='214.2' cy='31.8' r='4.3'/%3E%3Ccircle cx='24.0' cy='33.6' r='4.7'/%3E%3Ccircle cx='70.1' cy='30.9' r='4.2'/%3E%3Ccircle cx='127.3' cy='23.1' r='5.7'/%3E%3Ccircle cx='160.3' cy='29.6' r='3.7'/%3E%3Ccircle cx='45.9' cy='30.3' r='5.2'/%3E%3Ccircle cx='71.9' cy='33.1' r='5.2'/%3E%3Ccircle cx='259.8' cy='33.5' r='5.2'/%3E%3Ccircle cx='244.0' cy='33.0' r='3.7'/%3E%3Ccircle cx='32.2' cy='33.7' r='6.3'/%3E%3Ccircle cx='68.8' cy='30.3' r='3.9'/%3E%3Ccircle cx='228.1' cy='30.5' r='4.1'/%3E%3Ccircle cx='51.7' cy='32.1' r='3.0'/%3E%3Ccircle cx='66.1' cy='31.1' r='5.5'/%3E%3Ccircle cx='171.1' cy='31.9' r='6.3'/%3E%3Ccircle cx='59.5' cy='33.9' r='3.6'/%3E%3Ccircle cx='125.2' cy='33.3' r='4.5'/%3E%3Ccircle cx='104.3' cy='26.4' r='4.7'/%3E%3Ccircle cx='102.5' cy='22.1' r='7.9'/%3E%3Ccircle cx='182.7' cy='29.6' r='5.0'/%3E%3Ccircle cx='42.2' cy='33.8' r='3.3'/%3E%3Ccircle cx='194.7' cy='22.6' r='4.1'/%3E%3Ccircle cx='177.0' cy='30.9' r='5.5'/%3E%3Ccircle cx='90.7' cy='26.8' r='3.7'/%3E%3Ccircle cx='152.5' cy='32.4' r='5.0'/%3E%3Ccircle cx='204.5' cy='25.8' r='6.9'/%3E%3Ccircle cx='99.7' cy='25.3' r='7.5'/%3E%3Ccircle cx='240.9' cy='32.9' r='4.8'/%3E%3Ccircle cx='238.9' cy='32.1' r='4.5'/%3E%3Ccircle cx='108.0' cy='26.8' r='6.3'/%3E%3Ccircle cx='25.8' cy='30.7' r='5.9'/%3E%3Ccircle cx='243.3' cy='32.7' r='3.6'/%3E%3Ccircle cx='203.9' cy='27.1' r='5.6'/%3E%3Ccircle cx='232.0' cy='33.5' r='5.3'/%3E%3Ccircle cx='12.1' cy='32.4' r='4.0'/%3E%3Ccircle cx='66.6' cy='30.4' r='4.6'/%3E%3C/g%3E%3Cg fill='%232c5a26'%3E%3Ccircle cx='171.1' cy='26.4' r='3.1'/%3E%3Ccircle cx='7.1' cy='32.8' r='3.3'/%3E%3Ccircle cx='59.1' cy='32.2' r='4.0'/%3E%3Ccircle cx='183.5' cy='29.4' r='4.6'/%3E%3Ccircle cx='92.9' cy='26.6' r='3.1'/%3E%3Ccircle cx='121.2' cy='24.7' r='5.2'/%3E%3Ccircle cx='243.4' cy='32.8' r='3.1'/%3E%3Ccircle cx='90.1' cy='30.6' r='3.6'/%3E%3Ccircle cx='231.7' cy='28.6' r='4.0'/%3E%3Ccircle cx='262.4' cy='32.4' r='2.4'/%3E%3Ccircle cx='126.6' cy='27.4' r='3.4'/%3E%3Ccircle cx='116.6' cy='26.0' r='4.0'/%3E%3Ccircle cx='89.8' cy='27.8' r='4.8'/%3E%3Ccircle cx='127.1' cy='28.8' r='2.9'/%3E%3Ccircle cx='241.4' cy='32.9' r='3.4'/%3E%3Ccircle cx='159.2' cy='31.2' r='4.0'/%3E%3Ccircle cx='9.2' cy='32.8' r='2.9'/%3E%3Ccircle cx='10.7' cy='31.6' r='2.5'/%3E%3Ccircle cx='42.3' cy='31.6' r='3.8'/%3E%3Ccircle cx='125.4' cy='25.0' r='4.7'/%3E%3Ccircle cx='223.6' cy='28.1' r='3.9'/%3E%3Ccircle cx='58.2' cy='31.7' r='2.4'/%3E%3Ccircle cx='6.9' cy='32.6' r='3.4'/%3E%3Ccircle cx='52.7' cy='32.5' r='2.7'/%3E%3Ccircle cx='193.7' cy='25.5' r='4.6'/%3E%3Ccircle cx='209.7' cy='28.0' r='4.7'/%3E%3Ccircle cx='27.7' cy='28.1' r='4.0'/%3E%3Ccircle cx='39.3' cy='29.5' r='3.9'/%3E%3Ccircle cx='106.5' cy='23.9' r='5.7'/%3E%3Ccircle cx='220.7' cy='28.3' r='3.4'/%3E%3Ccircle cx='181.2' cy='30.6' r='4.1'/%3E%3Ccircle cx='226.6' cy='29.1' r='4.0'/%3E%3Ccircle cx='62.0' cy='29.8' r='4.3'/%3E%3Ccircle cx='269.8' cy='32.2' r='3.6'/%3E%3Ccircle cx='91.1' cy='26.5' r='4.6'/%3E%3Ccircle cx='98.8' cy='28.2' r='4.3'/%3E%3Ccircle cx='153.7' cy='31.9' r='3.0'/%3E%3Ccircle cx='11.7' cy='31.6' r='2.1'/%3E%3Ccircle cx='221.6' cy='31.1' r='3.1'/%3E%3Ccircle cx='218.3' cy='31.1' r='2.7'/%3E%3Ccircle cx='144.5' cy='29.9' r='4.1'/%3E%3Ccircle cx='191.5' cy='23.5' r='4.1'/%3E%3Ccircle cx='262.2' cy='32.7' r='2.5'/%3E%3Ccircle cx='147.3' cy='32.2' r='3.6'/%3E%3Ccircle cx='177.8' cy='29.3' r='4.4'/%3E%3Ccircle cx='156.3' cy='32.0' r='2.9'/%3E%3Ccircle cx='233.9' cy='28.9' r='2.7'/%3E%3Ccircle cx='235.4' cy='29.1' r='3.4'/%3E%3Ccircle cx='159.9' cy='31.3' r='3.4'/%3E%3Ccircle cx='140.9' cy='28.2' r='2.5'/%3E%3Ccircle cx='267.7' cy='32.1' r='2.8'/%3E%3Ccircle cx='221.9' cy='29.6' r='3.4'/%3E%3Ccircle cx='191.9' cy='29.2' r='4.3'/%3E%3Ccircle cx='116.5' cy='23.9' r='5.2'/%3E%3Ccircle cx='77.2' cy='31.3' r='2.4'/%3E%3Ccircle cx='122.0' cy='24.5' r='5.2'/%3E%3Ccircle cx='133.6' cy='27.0' r='3.4'/%3E%3Ccircle cx='172.1' cy='26.5' r='2.8'/%3E%3Ccircle cx='216.0' cy='31.4' r='2.8'/%3E%3Ccircle cx='65.8' cy='29.7' r='3.0'/%3E%3Ccircle cx='100.7' cy='23.4' r='3.3'/%3E%3Ccircle cx='202.8' cy='27.9' r='4.5'/%3E%3Ccircle cx='72.2' cy='31.4' r='3.4'/%3E%3Ccircle cx='122.8' cy='27.3' r='3.9'/%3E%3Ccircle cx='148.0' cy='32.6' r='2.4'/%3E%3Ccircle cx='175.7' cy='28.5' r='3.7'/%3E%3Ccircle cx='235.5' cy='30.3' r='4.1'/%3E%3Ccircle cx='67.3' cy='29.3' r='4.1'/%3E%3Ccircle cx='89.9' cy='29.9' r='4.6'/%3E%3Ccircle cx='63.3' cy='29.1' r='4.2'/%3E%3Ccircle cx='40.4' cy='30.5' r='4.1'/%3E%3Ccircle cx='74.6' cy='31.9' r='4.0'/%3E%3Ccircle cx='118.7' cy='25.0' r='3.0'/%3E%3Ccircle cx='113.6' cy='25.1' r='2.8'/%3E%3Ccircle cx='58.7' cy='31.2' r='4.0'/%3E%3Ccircle cx='267.4' cy='32.7' r='3.1'/%3E%3Ccircle cx='210.2' cy='27.6' r='4.4'/%3E%3Ccircle cx='55.4' cy='32.8' r='2.2'/%3E%3Ccircle cx='14.2' cy='31.8' r='3.1'/%3E%3Ccircle cx='158.7' cy='31.8' r='2.6'/%3E%3Ccircle cx='59.5' cy='30.6' r='4.2'/%3E%3Ccircle cx='256.1' cy='33.2' r='2.0'/%3E%3Ccircle cx='262.8' cy='32.0' r='3.6'/%3E%3Ccircle cx='92.9' cy='27.7' r='4.0'/%3E%3Ccircle cx='121.0' cy='26.1' r='2.7'/%3E%3Ccircle cx='194.7' cy='22.6' r='3.4'/%3E%3Ccircle cx='127.5' cy='23.8' r='4.0'/%3E%3C/g%3E%3Cg fill='%234f8233'%3E%3Ccircle cx='57.1' cy='31.7' r='2.2'/%3E%3Ccircle cx='8.2' cy='31.7' r='2.5'/%3E%3Ccircle cx='195.7' cy='21.2' r='3.4'/%3E%3Ccircle cx='114.0' cy='24.3' r='2.9'/%3E%3Ccircle cx='271.3' cy='31.9' r='1.7'/%3E%3Ccircle cx='206.5' cy='23.1' r='3.6'/%3E%3Ccircle cx='114.3' cy='23.1' r='3.7'/%3E%3Ccircle cx='193.0' cy='22.8' r='3.5'/%3E%3Ccircle cx='114.4' cy='23.9' r='2.0'/%3E%3Ccircle cx='96.9' cy='23.7' r='2.0'/%3E%3Ccircle cx='100.7' cy='21.5' r='3.5'/%3E%3Ccircle cx='67.1' cy='28.4' r='2.7'/%3E%3Ccircle cx='95.9' cy='23.5' r='3.1'/%3E%3Ccircle cx='149.0' cy='31.9' r='2.9'/%3E%3Ccircle cx='178.7' cy='27.9' r='2.9'/%3E%3Ccircle cx='270.6' cy='32.4' r='2.3'/%3E%3Ccircle cx='205.0' cy='24.7' r='2.8'/%3E%3Ccircle cx='17.7' cy='31.5' r='2.0'/%3E%3Ccircle cx='30.8' cy='28.7' r='3.2'/%3E%3Ccircle cx='153.6' cy='31.9' r='2.8'/%3E%3Ccircle cx='158.5' cy='29.4' r='2.5'/%3E%3Ccircle cx='224.2' cy='29.8' r='2.6'/%3E%3Ccircle cx='210.5' cy='27.8' r='3.5'/%3E%3Ccircle cx='47.5' cy='30.8' r='1.7'/%3E%3Ccircle cx='138.8' cy='25.7' r='1.9'/%3E%3Ccircle cx='261.1' cy='31.7' r='2.2'/%3E%3Ccircle cx='166.6' cy='27.6' r='2.2'/%3E%3Ccircle cx='182.2' cy='28.2' r='2.1'/%3E%3Ccircle cx='198.9' cy='23.4' r='2.1'/%3E%3Ccircle cx='70.6' cy='30.3' r='1.8'/%3E%3Ccircle cx='209.3' cy='26.1' r='3.6'/%3E%3Ccircle cx='207.6' cy='26.6' r='3.9'/%3E%3Ccircle cx='260.9' cy='32.1' r='2.7'/%3E%3Ccircle cx='120.8' cy='25.1' r='3.8'/%3E%3Ccircle cx='70.3' cy='29.3' r='3.1'/%3E%3Ccircle cx='200.6' cy='22.6' r='4.2'/%3E%3Ccircle cx='226.1' cy='28.5' r='1.8'/%3E%3Ccircle cx='173.8' cy='27.7' r='2.0'/%3E%3Ccircle cx='18.2' cy='31.0' r='1.6'/%3E%3Ccircle cx='124.5' cy='23.6' r='2.8'/%3E%3Ccircle cx='75.3' cy='30.1' r='2.2'/%3E%3Ccircle cx='215.6' cy='28.2' r='3.4'/%3E%3Ccircle cx='263.1' cy='31.2' r='1.8'/%3E%3Ccircle cx='35.0' cy='26.5' r='3.1'/%3E%3Ccircle cx='174.0' cy='28.0' r='2.2'/%3E%3Ccircle cx='190.3' cy='25.0' r='3.0'/%3E%3Ccircle cx='176.2' cy='27.4' r='2.0'/%3E%3Ccircle cx='71.7' cy='28.5' r='3.1'/%3E%3Ccircle cx='243.0' cy='32.7' r='1.4'/%3E%3Ccircle cx='77.7' cy='30.8' r='2.4'/%3E%3Ccircle cx='31.9' cy='27.8' r='1.8'/%3E%3Ccircle cx='27.5' cy='28.4' r='2.5'/%3E%3Ccircle cx='175.7' cy='28.3' r='2.5'/%3E%3Ccircle cx='61.3' cy='30.6' r='2.7'/%3E%3Ccircle cx='232.1' cy='29.9' r='1.8'/%3E%3Ccircle cx='224.1' cy='28.5' r='2.9'/%3E%3Ccircle cx='62.0' cy='30.3' r='1.9'/%3E%3Ccircle cx='224.3' cy='29.1' r='2.7'/%3E%3Ccircle cx='273.1' cy='32.6' r='2.1'/%3E%3Ccircle cx='206.9' cy='22.7' r='2.8'/%3E%3Ccircle cx='104.4' cy='24.1' r='4.0'/%3E%3Ccircle cx='25.4' cy='30.3' r='2.5'/%3E%3Ccircle cx='135.9' cy='23.8' r='2.5'/%3E%3Ccircle cx='214.9' cy='29.2' r='2.0'/%3E%3Ccircle cx='184.1' cy='29.1' r='2.2'/%3E%3Ccircle cx='201.2' cy='21.5' r='2.7'/%3E%3Ccircle cx='42.9' cy='29.5' r='2.8'/%3E%3Ccircle cx='103.7' cy='24.0' r='3.7'/%3E%3Ccircle cx='158.8' cy='29.3' r='3.0'/%3E%3Ccircle cx='123.1' cy='23.4' r='2.5'/%3E%3Ccircle cx='90.4' cy='28.0' r='3.3'/%3E%3Ccircle cx='71.5' cy='29.8' r='2.1'/%3E%3Ccircle cx='102.8' cy='22.5' r='2.9'/%3E%3Ccircle cx='57.0' cy='31.2' r='2.6'/%3E%3Ccircle cx='151.0' cy='31.8' r='2.2'/%3E%3Ccircle cx='52.0' cy='31.4' r='2.7'/%3E%3Ccircle cx='80.6' cy='31.6' r='2.2'/%3E%3C/g%3E%3Cg fill='%2386b347'%3E%3Ccircle cx='152.0' cy='31.8' r='1.8'/%3E%3Ccircle cx='181.1' cy='27.2' r='1.1'/%3E%3Ccircle cx='152.7' cy='31.6' r='0.9'/%3E%3Ccircle cx='26.2' cy='28.2' r='2.0'/%3E%3Ccircle cx='27.0' cy='28.0' r='1.2'/%3E%3Ccircle cx='206.9' cy='22.6' r='1.5'/%3E%3Ccircle cx='64.0' cy='28.8' r='1.5'/%3E%3Ccircle cx='212.0' cy='26.0' r='1.5'/%3E%3Ccircle cx='267.4' cy='31.1' r='1.4'/%3E%3Ccircle cx='150.2' cy='31.6' r='1.6'/%3E%3Ccircle cx='115.7' cy='23.0' r='2.1'/%3E%3Ccircle cx='236.2' cy='29.1' r='1.9'/%3E%3Ccircle cx='264.5' cy='31.0' r='1.4'/%3E%3Ccircle cx='197.1' cy='20.0' r='1.9'/%3E%3Ccircle cx='118.4' cy='24.4' r='2.2'/%3E%3Ccircle cx='273.6' cy='32.3' r='1.0'/%3E%3Ccircle cx='59.6' cy='30.3' r='1.2'/%3E%3Ccircle cx='267.8' cy='31.5' r='1.2'/%3E%3Ccircle cx='35.2' cy='26.4' r='2.0'/%3E%3Ccircle cx='52.8' cy='31.5' r='1.3'/%3E%3Ccircle cx='162.9' cy='26.9' r='1.1'/%3E%3Ccircle cx='33.6' cy='27.0' r='1.3'/%3E%3Ccircle cx='68.0' cy='28.3' r='1.7'/%3E%3Ccircle cx='64.9' cy='29.1' r='1.3'/%3E%3Ccircle cx='50.9' cy='31.0' r='1.2'/%3E%3Ccircle cx='153.1' cy='31.5' r='1.3'/%3E%3Ccircle cx='74.8' cy='29.2' r='1.9'/%3E%3Ccircle cx='97.0' cy='21.7' r='2.6'/%3E%3Ccircle cx='135.3' cy='23.2' r='1.3'/%3E%3Ccircle cx='261.7' cy='31.0' r='1.3'/%3E%3Ccircle cx='147.5' cy='30.9' r='1.2'/%3E%3Ccircle cx='273.3' cy='32.2' r='1.1'/%3E%3Ccircle cx='7.0' cy='31.9' r='1.2'/%3E%3Ccircle cx='220.7' cy='27.9' r='1.7'/%3E%3Ccircle cx='46.8' cy='30.2' r='1.3'/%3E%3Ccircle cx='74.6' cy='29.1' r='1.5'/%3E%3Ccircle cx='177.3' cy='26.7' r='1.3'/%3E%3Ccircle cx='149.4' cy='31.7' r='1.6'/%3E%3Ccircle cx='4.4' cy='32.4' r='1.6'/%3E%3Ccircle cx='227.6' cy='28.2' r='1.3'/%3E%3Ccircle cx='198.9' cy='21.4' r='2.0'/%3E%3Ccircle cx='131.5' cy='20.7' r='2.1'/%3E%3Ccircle cx='237.2' cy='29.9' r='1.8'/%3E%3C/g%3E%3Cg fill='%23e6f8b0' opacity='.8'%3E%3Ccircle cx='136' cy='22.3' r='1.1'/%3E%3Ccircle cx='79' cy='30.4' r='1.1'/%3E%3Ccircle cx='204' cy='20.5' r='1.1'/%3E%3Ccircle cx='53' cy='31.5' r='1.1'/%3E%3Ccircle cx='230' cy='27.7' r='1.1'/%3E%3Ccircle cx='241' cy='31.5' r='1.1'/%3E%3Ccircle cx='142' cy='27.0' r='1.1'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--ink-1);
+}
+
+body {
+  margin: 0;
+  background: var(--ink-1);
+  color: var(--parch);
+  font-family: var(--font-lore);
+  font-size: 1rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:where(a, button, input, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--rune);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.visually-hidden:not(:focus):not(:active) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: var(--stone-1);
+  color: var(--rune-strong);
+  font-family: var(--font-carved);
+  text-decoration: none;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* =============================================================================
+   1. SHARED MATERIALS
+   ============================================================================= */
+
+/* Carved mossy stone slab */
+.tablet {
+  position: relative;
+  isolation: isolate;
+  color: var(--parch);
+  background-color: var(--stone-2);
+  background-image:
+    radial-gradient(120% 60% at 18% 0%, rgb(160 200 170 / 0.13), transparent 60%),
+    radial-gradient(90% 70% at 105% 105%, rgb(0 0 0 / 0.45), transparent 65%),
+    var(--grain),
+    var(--mottle),
+    linear-gradient(172deg, #2e3c37 0%, #212c29 48%, #182220 100%);
+  background-size: auto, auto, 220px 220px, 600px 600px, auto;
+  border-radius: 26px 22px 24px 20px / 20px 24px 22px 26px;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.11),
+    inset 0 0 0 1px rgb(255 255 255 / 0.035),
+    inset 0 -8px 18px rgb(0 0 0 / 0.42),
+    inset 0 0 46px rgb(0 0 0 / 0.32),
+    0 0 0 1px var(--stone-edge),
+    0 2px 0 1px rgb(0 0 0 / 0.5),
+    0 26px 60px rgb(0 0 0 / 0.55);
+}
+
+/* Engraved inner groove */
+.tablet::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border-radius: 18px 15px 17px 14px / 14px 17px 15px 18px;
+  border: 1px solid rgb(0 0 0 / 0.55);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.06),
+    inset 0 1px 0 rgb(255 255 255 / 0.04);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Moss growing over the top edge */
+.tablet::after {
+  content: "";
+  position: absolute;
+  inset-inline: 5% 38%;
+  top: -21px;
+  height: 36px;
+  background: var(--moss-drape) left bottom / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 3px rgb(0 0 0 / 0.45));
+  pointer-events: none;
+}
+
+/* Glowing rune text */
+.glow,
+.title-logo,
+.section-title {
+  color: var(--rune-strong);
+  text-shadow:
+    0 0 1px rgb(255 255 255 / 0.85),
+    0 0 12px var(--rune-glow),
+    0 0 34px rgb(60 210 180 / 0.32);
+}
+
+/* Carved stone buttons */
+.carved-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-block-size: 2.5rem;
+  padding: 0.4rem 1.1rem;
+  border: 0;
+  border-radius: 12px 10px 12px 10px;
+  background:
+    var(--grain),
+    linear-gradient(180deg, #3a4a44, #26322e);
+  background-size: 220px 220px, auto;
+  color: var(--parch);
+  font-family: var(--font-carved);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.16),
+    inset 0 -3px 0 rgb(0 0 0 / 0.35),
+    0 0 0 1px var(--stone-edge),
+    0 4px 10px rgb(0 0 0 / 0.4);
+  transition: color 160ms ease, box-shadow 160ms ease, translate 120ms ease, filter 160ms ease;
+}
+
+.carved-btn:hover {
+  color: var(--rune-strong);
+  filter: brightness(1.12);
+}
+
+.carved-btn:active {
+  translate: 0 1px;
+  box-shadow:
+    inset 0 2px 4px rgb(0 0 0 / 0.45),
+    0 0 0 1px var(--stone-edge);
+}
+
+.carved-btn--glow {
+  color: var(--rune-strong);
+  text-shadow: 0 0 10px var(--rune-glow);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.16),
+    inset 0 -3px 0 rgb(0 0 0 / 0.35),
+    0 0 0 1px rgb(142 247 226 / 0.45),
+    0 0 18px rgb(110 240 214 / 0.18),
+    0 4px 10px rgb(0 0 0 / 0.4);
+}
+
+/* =============================================================================
+   2. GAME SCREEN
+   ============================================================================= */
+.game {
+  position: relative;
+  block-size: 100svh;
+  min-block-size: 600px;
+  overflow: hidden;
+  background: var(--ink-1);
+  --journal-space: calc(var(--journal-w) + var(--edge) * 2);
+}
+
+.game.is-journal-collapsed {
+  --journal-space: var(--edge);
+}
+
+#world,
+.world-fallback {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  display: block;
+}
+
+#world {
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+#world:active {
+  cursor: grabbing;
+}
+
+.world-fallback {
+  object-fit: cover;
+}
+
+.atmosphere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(130% 95% at 58% 46%, transparent 52%, rgb(2 7 5 / 0.6) 100%),
+    linear-gradient(to bottom, rgb(2 7 6 / 0.55), transparent 15%, transparent 78%, rgb(6 17 13 / 0.94) 100%);
+  transition: opacity 900ms ease;
+}
+
+.atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(2 8 6 / 0.88) 0%, rgb(2 8 6 / 0.62) 30%, rgb(2 8 6 / 0) 58%);
+  opacity: 0;
+  transition: opacity 900ms ease;
+}
+
+.game[data-screen="title"] .atmosphere::before {
+  opacity: 1;
+}
+
+/* Foreground foliage silhouettes (drawn by app.js) */
+.foliage {
+  position: absolute;
+  pointer-events: none;
+  overflow: visible;
+  transition: transform 1.2s cubic-bezier(.2, .7, .2, 1), opacity 1.2s ease;
+}
+
+.foliage--left {
+  left: 0;
+  bottom: 0;
+  inline-size: clamp(220px, 30vw, 460px);
+  block-size: clamp(220px, 34vw, 420px);
+  transform: translate(-6%, 6%);
+}
+
+.foliage--right {
+  right: 0;
+  top: 0;
+  inline-size: clamp(220px, 30vw, 480px);
+  block-size: clamp(200px, 28vw, 380px);
+  transform: translate(4%, -6%);
+}
+
+.game[data-screen="play"] .foliage--left {
+  transform: translate(-46%, 34%);
+  opacity: 0.9;
+}
+
+.game[data-screen="play"] .foliage--right {
+  transform: translate(30%, -42%);
+  opacity: 0.85;
+}
+
+.engine-status {
+  position: absolute;
+  left: 50%;
+  bottom: 22%;
+  translate: -50% 0;
+  font-family: var(--font-carved);
+  letter-spacing: 0.2em;
+  font-size: 0.85rem;
+  color: var(--parch-dim);
+  pointer-events: none;
+  transition: opacity 600ms ease;
+}
+
+.engine-status.is-done {
+  opacity: 0;
+}
+
+.engine-status.is-error {
+  bottom: auto;
+  top: 50%;
+  max-inline-size: 30rem;
+  padding: 0.8rem 1.1rem;
+  border-radius: 12px;
+  background: rgb(3 9 7 / 0.82);
+  text-align: center;
+  letter-spacing: 0.06em;
+  color: var(--parch);
+}
+
+/* Screen switching ------------------------------------------------------------ */
+.hud-top,
+.journal,
+.hud-bottom,
+.pins {
+  transition: opacity 700ms ease, transform 900ms cubic-bezier(.2, .8, .2, 1), visibility 0s linear 0s;
+}
+
+.game[data-screen="title"] :is(.hud-top, .journal, .hud-bottom, .pins) {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 400ms ease, transform 500ms ease, visibility 0s linear 500ms;
+}
+
+.game[data-screen="title"] .hud-top {
+  transform: translateY(-24px);
+}
+
+.game[data-screen="title"] .journal {
+  transform: translateX(-40px);
+}
+
+.game[data-screen="title"] .hud-bottom {
+  transform: translateY(24px);
+}
+
+.game[data-screen="play"] .journal {
+  transition-delay: 350ms;
+}
+
+.game[data-screen="play"] .hud-bottom {
+  transition-delay: 550ms;
+}
+
+/* =============================================================================
+   3. TITLE SCREEN
+   ============================================================================= */
+.title-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(2rem, 6vh, 3.6rem);
+  padding: 8vh clamp(1.5rem, 7vw, 7rem);
+  transition: opacity 700ms ease, transform 900ms ease, visibility 0s linear 0s;
+}
+
+.game[data-screen="play"] .title-screen {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-30px);
+  transition: opacity 600ms ease, transform 800ms ease, visibility 0s linear 800ms;
+}
+
+.title-lockup {
+  display: grid;
+  gap: 0.7rem;
+  max-inline-size: 40rem;
+}
+
+.title-kicker {
+  font-family: var(--font-carved);
+  font-size: 0.86rem;
+  letter-spacing: 0.34em;
+  color: var(--rune);
+  opacity: 0.85;
+}
+
+.title-logo {
+  font-family: var(--font-logo);
+  font-weight: 400;
+  line-height: 0.95;
+  display: grid;
+  outline: none;
+  color: #effff9;
+  text-shadow:
+    0 0 2px rgb(255 255 255 / 0.9),
+    0 0 14px rgb(120 245 220 / 0.75),
+    0 0 42px rgb(60 210 180 / 0.45),
+    0 0 90px rgb(40 180 150 / 0.3);
+  animation: rune-flicker 6s ease-in-out infinite;
+}
+
+.title-logo-line {
+  font-size: clamp(1.9rem, 1.2rem + 2vw, 3rem);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.title-logo-line--big {
+  font-size: clamp(3rem, 1.5rem + 4.6vw, 6rem);
+  margin-inline-start: -0.04em;
+}
+
+.title-logo::after {
+  content: "";
+  display: block;
+  inline-size: min(100%, 22rem);
+  block-size: 12px;
+  margin-block-start: 0.9rem;
+  background:
+    radial-gradient(circle, var(--rune-strong) 0 2px, transparent 3px) center / 12px 12px no-repeat,
+    linear-gradient(90deg, transparent, rgb(142 247 226 / 0.65) 30%, rgb(142 247 226 / 0.65) 70%, transparent) center / 100% 1px no-repeat;
+  filter: drop-shadow(0 0 6px var(--rune-glow));
+}
+
+@keyframes rune-flicker {
+  0%, 100% { filter: brightness(1); }
+  42% { filter: brightness(1.06); }
+  47% { filter: brightness(0.94); }
+  52% { filter: brightness(1.08); }
+}
+
+.title-sub {
+  font-style: italic;
+  font-size: clamp(1.1rem, 1rem + 0.4vw, 1.35rem);
+  color: var(--parch-2);
+  opacity: 0.88;
+}
+
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  justify-items: start;
+  gap: 0.2rem;
+}
+
+.menu-item {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.85rem;
+  padding: 0.42rem 0.6rem 0.42rem 2.1rem;
+  border: 0;
+  background: none;
+  font-family: var(--font-carved);
+  font-size: clamp(1.15rem, 1rem + 0.5vw, 1.45rem);
+  letter-spacing: 0.14em;
+  color: rgb(239 230 207 / 0.7);
+  cursor: pointer;
+  transition: color 180ms ease, text-shadow 180ms ease, translate 220ms cubic-bezier(.2, .8, .2, 1);
+}
+
+/* Leaf-rune selector that slides in next to the active item */
+.menu-item::before {
+  content: "";
+  position: absolute;
+  left: 0.35rem;
+  top: 50%;
+  inline-size: 0.8rem;
+  block-size: 0.8rem;
+  translate: -8px -50%;
+  rotate: 45deg;
+  border: 1.5px solid var(--rune);
+  background: radial-gradient(circle, var(--rune-strong) 0 28%, transparent 32%);
+  box-shadow: 0 0 12px var(--rune-glow);
+  opacity: 0;
+  transition: opacity 180ms ease, translate 220ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.menu-item:is(:hover, :focus-visible) {
+  color: var(--rune-strong);
+  text-shadow: 0 0 12px var(--rune-glow), 0 0 30px rgb(60 210 180 / 0.3);
+  translate: 6px 0;
+  outline: none;
+}
+
+.menu-item:is(:hover, :focus-visible)::before {
+  opacity: 1;
+  translate: 0 -50%;
+}
+
+.menu-item[data-action="begin"] {
+  color: var(--rune-strong);
+  font-size: clamp(1.3rem, 1.1rem + 0.7vw, 1.75rem);
+  text-shadow: 0 0 14px rgb(110 240 214 / 0.35);
+}
+
+.menu-item[data-action="begin"]::before {
+  opacity: 0.55;
+  translate: 0 -50%;
+}
+
+.menu-num {
+  display: inline-block;
+  min-inline-size: 2.4ch;
+  font-size: 0.8em;
+  color: var(--ember);
+  opacity: 0.9;
+}
+
+.menu-item--back {
+  margin-block-start: 0.5rem;
+  font-size: 1rem;
+  color: var(--parch-dim);
+}
+
+.title-sfx {
+  position: absolute;
+  top: calc((var(--hud-h) - 46px) / 2);
+  right: var(--edge);
+}
+
+.title-hint {
+  position: absolute;
+  left: clamp(1.5rem, 7vw, 7rem);
+  bottom: 5vh;
+  font-family: var(--font-carved);
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  color: var(--parch-dim);
+  animation: breathe 2.8s ease-in-out infinite;
+}
+
+kbd {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  margin-inline: 0.2rem;
+  border-radius: 5px;
+  font-family: var(--font-carved);
+  font-size: 0.85em;
+  color: var(--parch);
+  background: rgb(255 255 255 / 0.06);
+  box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.4), 0 0 0 1px rgb(255 255 255 / 0.18);
+}
+
+@keyframes breathe {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* =============================================================================
+   4. TOP HUD
+   ============================================================================= */
+.hud-top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  block-size: var(--hud-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 var(--edge);
+  pointer-events: none;
+}
+
+.hud-top > * {
+  pointer-events: auto;
+}
+
+.hud-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 0.5rem 0.3rem 0.3rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--rune-strong);
+  cursor: pointer;
+}
+
+.emblem {
+  inline-size: 40px;
+  block-size: 40px;
+  color: var(--rune);
+  filter: drop-shadow(0 0 8px var(--rune-glow));
+}
+
+.emblem-roots {
+  color: var(--ember);
+}
+
+.hud-brand-name {
+  font-family: var(--font-logo);
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 12px var(--rune-glow), 0 2px 6px rgb(0 0 0 / 0.6);
+}
+
+.hud-brand:hover .hud-brand-name {
+  color: #fff;
+}
+
+/* Lore meter: ten rune sockets */
+.lore-meter {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.5rem 1.1rem 0.5rem 1rem;
+  border-radius: 999px;
+  background:
+    var(--grain),
+    linear-gradient(180deg, rgb(40 52 48 / 0.92), rgb(22 30 27 / 0.92));
+  background-size: 220px 220px, auto;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    inset 0 -3px 6px rgb(0 0 0 / 0.4),
+    0 0 0 1px var(--stone-edge),
+    0 8px 22px rgb(0 0 0 / 0.4);
+}
+
+.rune-sockets {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rune-sockets li {
+  inline-size: 10px;
+  block-size: 10px;
+  rotate: 45deg;
+  border-radius: 2px;
+  background: rgb(0 0 0 / 0.5);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.8), 0 1px 0 rgb(255 255 255 / 0.12);
+  transition: background 300ms ease, box-shadow 300ms ease;
+}
+
+.rune-sockets li:nth-child(5) {
+  margin-inline-end: 0.35rem;
+}
+
+.rune-sockets li.is-lit {
+  background: radial-gradient(circle at 35% 35%, #fff, var(--rune) 55%, #2fae98);
+  box-shadow: 0 0 8px var(--rune-glow), 0 0 0 1px rgb(255 255 255 / 0.4);
+}
+
+.rune-sockets li.is-codex.is-lit {
+  background: radial-gradient(circle at 35% 35%, #fff, var(--ember) 55%, var(--ember-deep));
+  box-shadow: 0 0 8px var(--ember-glow), 0 0 0 1px rgb(255 255 255 / 0.4);
+}
+
+.rune-sockets li.is-new {
+  animation: socket-pop 900ms cubic-bezier(.2, 1.6, .4, 1);
+}
+
+@keyframes socket-pop {
+  0% {
+    scale: 0.4;
+    filter: brightness(3);
+  }
+  60% {
+    scale: 1.7;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+.lore-text {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  font-family: var(--font-carved);
+  white-space: nowrap;
+}
+
+.lore-count {
+  font-size: 1.05rem;
+  color: var(--rune-strong);
+  text-shadow: 0 0 10px var(--rune-glow);
+}
+
+.lore-of {
+  color: var(--parch-dim);
+  font-size: 0.85rem;
+}
+
+.lore-word {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  color: var(--parch-dim);
+}
+
+.lore-rank {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--ember);
+  padding-inline-start: 0.55rem;
+  border-inline-start: 1px solid rgb(255 255 255 / 0.15);
+}
+
+.hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+/* Celestial dial: the disc turns with the sky */
+.celestial-dial {
+  --night: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 4px 1rem 4px 4px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  background:
+    var(--grain),
+    linear-gradient(180deg, rgb(40 52 48 / 0.92), rgb(22 30 27 / 0.92));
+  background-size: 220px 220px, auto;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    inset 0 -3px 6px rgb(0 0 0 / 0.4),
+    0 0 0 1px var(--stone-edge),
+    0 8px 22px rgb(0 0 0 / 0.4);
+}
+
+.dial-window {
+  position: relative;
+  inline-size: 42px;
+  block-size: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: color-mix(in oklab, #79c5f2 calc((1 - var(--night)) * 100%), #0b1638);
+  box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.55), 0 0 0 2px #0d1513, 0 0 0 3px rgb(255 255 255 / 0.12);
+}
+
+.dial-window::after {
+  content: "";
+  position: absolute;
+  inset: 62% -10% -10% -10%;
+  border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+  background: linear-gradient(180deg, #2c5a2c, #10260f);
+  box-shadow: 0 -1px 0 rgb(170 220 120 / 0.35);
+}
+
+.dial-disc {
+  position: absolute;
+  inset: 0;
+  rotate: calc(var(--night) * 180deg);
+}
+
+.dial-sun,
+.dial-moon {
+  position: absolute;
+  left: 50%;
+  inline-size: 14px;
+  block-size: 14px;
+  margin-inline-start: -7px;
+  border-radius: 50%;
+}
+
+.dial-sun {
+  top: 9px;
+  background: radial-gradient(circle at 40% 40%, #fffbe6, #ffd05a 60%, #f39b2a);
+  box-shadow: 0 0 10px 2px rgb(255 200 90 / 0.75);
+}
+
+.dial-moon {
+  bottom: 9px;
+  rotate: 180deg;
+  background: transparent;
+  box-shadow: inset -4px 2px 0 0 #f4ecd0;
+  filter: drop-shadow(0 0 4px rgb(220 230 255 / 0.8));
+}
+
+.dial-star {
+  position: absolute;
+  inline-size: 2px;
+  block-size: 2px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.dial-star--a {
+  left: 9px;
+  bottom: 13px;
+}
+
+.dial-star--b {
+  right: 10px;
+  bottom: 18px;
+}
+
+.dial-label {
+  font-family: var(--font-carved);
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+  color: var(--parch);
+  min-inline-size: 3.6em;
+  text-align: start;
+}
+
+.celestial-dial:hover .dial-label {
+  color: var(--rune-strong);
+  text-shadow: 0 0 10px var(--rune-glow);
+}
+
+.hud-icon {
+  display: grid;
+  place-items: center;
+  min-inline-size: 46px;
+  min-block-size: 46px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--parch);
+  background:
+    var(--grain),
+    linear-gradient(180deg, rgb(44 56 52 / 0.94), rgb(22 30 27 / 0.94));
+  background-size: 220px 220px, auto;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    inset 0 -3px 6px rgb(0 0 0 / 0.4),
+    0 0 0 1px var(--stone-edge),
+    0 8px 22px rgb(0 0 0 / 0.4);
+  transition: color 160ms ease, box-shadow 200ms ease;
+}
+
+.hud-icon svg {
+  inline-size: 20px;
+  block-size: 20px;
+}
+
+.hud-icon:hover {
+  color: var(--rune-strong);
+}
+
+.hud-icon .icon-play,
+.hud-icon[aria-pressed="true"] .icon-pause,
+.hud-icon .icon-sound-off,
+.hud-icon[aria-pressed="false"] .icon-sound-on {
+  display: none;
+}
+
+.hud-icon[aria-pressed="true"] .icon-play,
+.hud-icon[aria-pressed="false"] .icon-sound-off {
+  display: block;
+}
+
+#sfx-toggle[aria-pressed="true"],
+#title-sfx-toggle[aria-pressed="true"] {
+  color: var(--rune);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    inset 0 -3px 6px rgb(0 0 0 / 0.4),
+    0 0 0 1px rgb(142 247 226 / 0.3),
+    0 0 14px rgb(110 240 214 / 0.14),
+    0 8px 22px rgb(0 0 0 / 0.4);
+}
+
+#sfx-toggle[aria-pressed="false"],
+#title-sfx-toggle[aria-pressed="false"] {
+  color: var(--parch-dim);
+}
+
+#sfx-toggle:hover,
+#title-sfx-toggle:hover {
+  color: var(--rune-strong);
+}
+
+/* =============================================================================
+   5. QUEST JOURNAL
+   ============================================================================= */
+.journal {
+  position: absolute;
+  left: var(--edge);
+  top: calc(var(--hud-h) + 14px);
+  max-block-size: calc(100% - var(--hud-h) - 14px - var(--edge) - 4px);
+  inline-size: var(--journal-w);
+  display: flex;
+  flex-direction: column;
+  padding: 1.15rem 1.3rem 1.1rem;
+  outline: none;
+}
+
+
+.journal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-block-end: 0.6rem;
+}
+
+.journal-kicker {
+  font-family: var(--font-carved);
+  font-size: 0.8rem;
+  letter-spacing: 0.24em;
+  color: var(--parch-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rune-glyph {
+  font-size: 1rem;
+  color: var(--rune);
+  text-shadow: 0 0 8px var(--rune-glow);
+  letter-spacing: 0;
+}
+
+.journal-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.4rem 0.2rem 0.6rem;
+  border: 0;
+  border-radius: 8px;
+  background: rgb(0 0 0 / 0.22);
+  color: var(--parch-dim);
+  font-family: var(--font-carved);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+}
+
+.journal-toggle svg {
+  inline-size: 16px;
+  block-size: 16px;
+  transition: rotate 300ms ease;
+}
+
+.journal-toggle[aria-expanded="false"] svg {
+  rotate: 180deg;
+}
+
+.journal-toggle:hover {
+  color: var(--rune-strong);
+}
+
+.journal-body {
+  flex: 0 1 auto;
+  min-block-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.journal-body[hidden] {
+  display: none;
+}
+
+/* Chapter path: five rune stones joined by a vine */
+.chapter-path {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0.2rem 0.5rem;
+}
+
+.chapter-path::before {
+  content: "";
+  position: absolute;
+  inset-inline: 1.6rem;
+  top: calc(50% - 1px);
+  block-size: 3px;
+  border-radius: 3px;
+  background: rgb(0 0 0 / 0.6);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.08), inset 0 1px 1px rgb(0 0 0 / 0.6);
+}
+
+.chapter-path::after {
+  content: "";
+  position: absolute;
+  left: 1.6rem;
+  top: calc(50% - 1px);
+  block-size: 3px;
+  inline-size: calc((100% - 3.2rem) * var(--path-progress, 0));
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--moss), var(--moss-light));
+  box-shadow: 0 0 8px rgb(160 220 90 / 0.5);
+  transition: inline-size 700ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.chapter-path [role="tab"] {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  border-radius: 46% 54% 50% 50% / 52% 48% 52% 48%;
+  background:
+    var(--grain),
+    radial-gradient(circle at 35% 30%, #4b5c55, #2a3632 70%, #1c2522);
+  background-size: 220px 220px, auto;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    inset 0 -3px 5px rgb(0 0 0 / 0.5),
+    0 0 0 1px var(--stone-edge),
+    0 4px 8px rgb(0 0 0 / 0.45);
+  transition: box-shadow 250ms ease, scale 250ms cubic-bezier(.2, 1.4, .4, 1);
+}
+
+.stone-num {
+  font-family: var(--font-carved);
+  font-size: 0.95rem;
+  color: rgb(239 230 207 / 0.55);
+  text-shadow: 0 1px 0 rgb(0 0 0 / 0.6);
+}
+
+.chapter-path [role="tab"].is-visited .stone-num {
+  color: var(--rune);
+  text-shadow: 0 0 6px rgb(110 240 214 / 0.4);
+}
+
+.chapter-path [role="tab"][aria-selected="true"] {
+  scale: 1.12;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.2),
+    inset 0 -3px 5px rgb(0 0 0 / 0.5),
+    0 0 0 2px rgb(142 247 226 / 0.75),
+    0 0 18px rgb(110 240 214 / 0.45),
+    0 4px 8px rgb(0 0 0 / 0.45);
+}
+
+.chapter-path [role="tab"][aria-selected="true"] .stone-num {
+  color: var(--rune-strong);
+  text-shadow: 0 0 10px var(--rune-glow);
+}
+
+.chapter-path [role="tab"]:hover {
+  scale: 1.08;
+}
+
+/* Chapter panels */
+.panels {
+  flex: 0 1 auto;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.15) transparent;
+  margin-inline: -0.4rem;
+  padding-inline: 0.4rem;
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), transparent);
+}
+
+.chapter {
+  display: grid;
+  gap: 0.85rem;
+  padding-block-end: 0.8rem;
+  outline: none;
+}
+
+.chapter[hidden] {
+  display: none;
+}
+
+.chapter.is-entering {
+  animation: chapter-in 520ms cubic-bezier(.2, .8, .2, 1);
+}
+
+@keyframes chapter-in {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+}
+
+.chapter-kicker {
+  font-family: var(--font-carved);
+  font-size: 0.74rem;
+  letter-spacing: 0.17em;
+  color: var(--rune);
+}
+
+.chapter-title {
+  font-family: var(--font-lore);
+  font-weight: 700;
+  font-size: clamp(1.3rem, 1.1rem + 0.5vw, 1.55rem);
+  line-height: 1.16;
+  color: #f7efdb;
+  text-shadow: 0 0 18px rgb(142 247 226 / 0.16), 0 2px 4px rgb(0 0 0 / 0.5);
+}
+
+.chapter-text {
+  font-size: 1.04rem;
+  line-height: 1.56;
+  color: var(--parch-2);
+}
+
+.chapter-text strong {
+  color: #ffe2a0;
+  font-weight: 700;
+}
+
+/* Campfire line — carved inscription */
+.pitch {
+  margin: 0;
+  padding: 0.75rem 0.9rem 0.85rem;
+  border-radius: 12px;
+  background: rgb(0 0 0 / 0.24);
+  box-shadow:
+    inset 0 2px 6px rgb(0 0 0 / 0.45),
+    0 1px 0 rgb(255 255 255 / 0.06);
+  border-inline-start: 2px solid rgb(142 247 226 / 0.5);
+}
+
+.pitch figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-block-end: 0.3rem;
+  font-family: var(--font-carved);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: var(--parch-dim);
+}
+
+.pitch-copy {
+  border: 0;
+  padding: 0.12rem 0.55rem;
+  border-radius: 6px;
+  background: rgb(255 255 255 / 0.06);
+  color: var(--parch-dim);
+  font-family: var(--font-carved);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+}
+
+.pitch-copy:hover {
+  color: var(--rune-strong);
+  background: rgb(142 247 226 / 0.1);
+}
+
+.pitch blockquote {
+  margin: 0;
+  font-style: italic;
+  font-size: 1.04rem;
+  line-height: 1.45;
+  color: var(--parch);
+}
+
+/* Field mission objective */
+.quest {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.quest-label {
+  font-family: var(--font-carved);
+  font-size: 0.74rem;
+  letter-spacing: 0.17em;
+  color: var(--ember);
+}
+
+.quest-action {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  inline-size: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 0;
+  border-radius: 12px;
+  text-align: start;
+  cursor: pointer;
+  font-family: var(--font-lore);
+  font-size: 1.02rem;
+  font-weight: 500;
+  color: var(--parch);
+  background:
+    var(--grain),
+    linear-gradient(180deg, #3a4943, #27332f);
+  background-size: 220px 220px, auto;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.14),
+    inset 0 -3px 0 rgb(0 0 0 / 0.32),
+    0 0 0 1px rgb(255 201 106 / 0.35),
+    0 0 16px rgb(255 190 90 / 0.08),
+    0 5px 12px rgb(0 0 0 / 0.35);
+  transition: box-shadow 180ms ease, translate 120ms ease, color 180ms ease;
+}
+
+.quest-action:hover {
+  color: #fff6de;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.14),
+    inset 0 -3px 0 rgb(0 0 0 / 0.32),
+    0 0 0 1px rgb(255 201 106 / 0.75),
+    0 0 22px rgb(255 190 90 / 0.25),
+    0 5px 12px rgb(0 0 0 / 0.35);
+}
+
+.quest-action:active {
+  translate: 0 1px;
+}
+
+.quest-check {
+  flex: none;
+  inline-size: 14px;
+  block-size: 14px;
+  rotate: 45deg;
+  border-radius: 3px;
+  border: 1.5px solid var(--ember);
+  box-shadow: 0 0 8px var(--ember-glow);
+}
+
+.quest-action.is-done .quest-check {
+  border-color: var(--rune);
+  background: radial-gradient(circle at 35% 35%, #fff, var(--rune) 60%, #2fae98);
+  box-shadow: 0 0 10px var(--rune-glow);
+}
+
+.quest-action.is-done {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.14),
+    inset 0 -3px 0 rgb(0 0 0 / 0.32),
+    0 0 0 1px rgb(142 247 226 / 0.35),
+    0 5px 12px rgb(0 0 0 / 0.35);
+}
+
+.quest-action--danger .quest-check {
+  border-color: var(--alarm);
+}
+
+/* Sunlight slider */
+.sun-control {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.65rem 0.85rem 0.4rem;
+  border-radius: 12px;
+  background: rgb(0 0 0 / 0.22);
+  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.4), 0 0 0 1px rgb(255 201 106 / 0.28);
+}
+
+.sun-control-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-carved);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+}
+
+.sun-control-head output {
+  color: var(--ember);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 8px var(--ember-glow);
+}
+
+.rune-slider {
+  --p: 83%;
+  appearance: none;
+  inline-size: 100%;
+  block-size: 2.2rem;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.rune-slider::-webkit-slider-runnable-track {
+  block-size: 8px;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, var(--ember-deep), var(--ember)) 0 0 / var(--p) 100% no-repeat,
+    rgb(0 0 0 / 0.55);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.7), 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
+.rune-slider::-moz-range-track {
+  block-size: 8px;
+  border-radius: 8px;
+  background: rgb(0 0 0 / 0.55);
+}
+
+.rune-slider::-moz-range-progress {
+  block-size: 8px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--ember-deep), var(--ember));
+}
+
+.rune-slider::-webkit-slider-thumb {
+  appearance: none;
+  inline-size: 22px;
+  block-size: 22px;
+  margin-block-start: -7px;
+  border-radius: 50%;
+  border: 2px solid #2a1a07;
+  background: radial-gradient(circle at 38% 35%, #fffbe6, #ffd05a 55%, #e88f2a);
+  box-shadow: 0 0 12px rgb(255 200 90 / 0.8);
+}
+
+.rune-slider::-moz-range-thumb {
+  inline-size: 20px;
+  block-size: 20px;
+  border-radius: 50%;
+  border: 2px solid #2a1a07;
+  background: radial-gradient(circle at 38% 35%, #fffbe6, #ffd05a 55%, #e88f2a);
+  box-shadow: 0 0 12px rgb(255 200 90 / 0.8);
+}
+
+.journal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding-block-start: 0.75rem;
+  border-block-start: 1px solid rgb(0 0 0 / 0.5);
+  box-shadow: 0 -1px 0 rgb(255 255 255 / 0.05) inset;
+}
+
+.step-counter {
+  font-family: var(--font-carved);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  color: var(--parch-dim);
+}
+
+/* =============================================================================
+   6. CODEX MARKERS
+   ============================================================================= */
+.pins {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.pin {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  will-change: transform, opacity;
+  transition: opacity 250ms ease;
+}
+
+.pin.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pin-mark {
+  position: relative;
+  inline-size: 30px;
+  block-size: 30px;
+  display: grid;
+  place-items: center;
+  animation: pin-bob 2.4s ease-in-out infinite;
+}
+
+.pin-mark::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  rotate: 45deg;
+  border-radius: 5px;
+  background: radial-gradient(circle at 35% 30%, #fff8dc, var(--ember) 50%, var(--ember-deep));
+  box-shadow:
+    0 0 0 2px rgb(60 30 5 / 0.6),
+    0 0 0 3.5px rgb(255 236 180 / 0.85),
+    0 0 18px 4px rgb(255 190 90 / 0.55);
+}
+
+.pin-mark::after {
+  content: "!";
+  position: relative;
+  font-family: var(--font-carved);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #3a2108;
+  line-height: 1;
+}
+
+/* Expanding ripple invites a click */
+.pin:not(.is-discovered) .pin-mark {
+  background: radial-gradient(circle, rgb(255 200 100 / 0.35), transparent 65%);
+  border-radius: 50%;
+}
+
+.pin.is-discovered .pin-mark {
+  animation: none;
+  inline-size: 24px;
+  block-size: 24px;
+}
+
+.pin.is-discovered .pin-mark::before {
+  background: radial-gradient(circle at 35% 30%, #effffb, var(--rune) 50%, #279a86);
+  box-shadow:
+    0 0 0 2px rgb(5 40 34 / 0.6),
+    0 0 0 3px rgb(220 255 248 / 0.7),
+    0 0 12px 2px rgb(110 240 214 / 0.45);
+}
+
+.pin.is-discovered .pin-mark::after {
+  content: "✓";
+  font-size: 0.8rem;
+  color: #053a31;
+}
+
+.pin-label {
+  padding: 0.22rem 0.6rem;
+  border-radius: 8px;
+  font-family: var(--font-carved);
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  color: var(--parch);
+  background: rgb(10 18 15 / 0.86);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.12), 0 4px 10px rgb(0 0 0 / 0.4);
+  opacity: 0;
+  translate: 0 -4px;
+  transition: opacity 180ms ease, translate 180ms ease;
+}
+
+.pin:is(:hover, :focus-visible) .pin-label,
+.pin.is-discovered .pin-label {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.pin.is-discovered:not(:hover, :focus-visible) .pin-label {
+  opacity: 0.75;
+}
+
+.pin:focus-visible {
+  outline: none;
+}
+
+.pin:focus-visible .pin-mark::before {
+  outline: 2px solid var(--rune);
+  outline-offset: 4px;
+}
+
+@keyframes pin-bob {
+  50% {
+    translate: 0 -5px;
+  }
+}
+
+@media (pointer: coarse) {
+  .pin .pin-label {
+    opacity: 0.85;
+    translate: 0 0;
+  }
+}
+
+/* =============================================================================
+   7. BOTTOM HUD
+   ============================================================================= */
+.hud-bottom {
+  position: absolute;
+  left: var(--journal-space);
+  right: var(--edge);
+  bottom: var(--edge);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  pointer-events: none;
+  transition-property: opacity, transform, left;
+}
+
+.hud-bottom > * {
+  pointer-events: auto;
+}
+
+.view-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0.3rem;
+  border-radius: 14px;
+  background:
+    var(--grain),
+    linear-gradient(180deg, rgb(40 52 48 / 0.92), rgb(22 30 27 / 0.92));
+  background-size: 220px 220px, auto;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    inset 0 -3px 6px rgb(0 0 0 / 0.4),
+    0 0 0 1px var(--stone-edge),
+    0 10px 26px rgb(0 0 0 / 0.45);
+}
+
+.view-btn {
+  position: relative;
+  padding: 0.5rem 0.85rem;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-carved);
+  font-size: 0.84rem;
+  letter-spacing: 0.1em;
+  color: rgb(239 230 207 / 0.66);
+  white-space: nowrap;
+  transition: color 160ms ease, background 160ms ease, text-shadow 160ms ease;
+}
+
+.view-btn:hover {
+  color: var(--parch);
+  background: rgb(255 255 255 / 0.05);
+}
+
+.view-btn[aria-pressed="true"] {
+  color: var(--rune-strong);
+  text-shadow: 0 0 10px var(--rune-glow);
+  background: rgb(0 0 0 / 0.28);
+  box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.45);
+}
+
+.view-btn[aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  inline-size: 5px;
+  block-size: 5px;
+  margin-inline-start: -2.5px;
+  rotate: 45deg;
+  background: var(--rune);
+  box-shadow: 0 0 6px var(--rune-glow);
+}
+
+.view-sep {
+  inline-size: 1px;
+  block-size: 1.4rem;
+  margin-inline: 0.3rem;
+  background: rgb(0 0 0 / 0.55);
+  box-shadow: 1px 0 0 rgb(255 255 255 / 0.07);
+}
+
+.hud-bottom-right {
+  display: grid;
+  justify-items: end;
+  gap: 0.35rem;
+}
+
+.legend {
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-carved);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--parch-2);
+  text-shadow: 0 1px 4px rgb(0 0 0 / 0.9);
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend-mark {
+  inline-size: 9px;
+  block-size: 9px;
+}
+
+.legend-mark--sugar {
+  border-radius: 50%;
+  background: var(--sugar);
+  box-shadow: 0 0 8px var(--sugar);
+}
+
+.legend-mark--mineral {
+  rotate: 45deg;
+  background: var(--mineral);
+  box-shadow: 0 0 8px var(--mineral);
+}
+
+.legend-mark--alarm {
+  inline-size: 0;
+  block-size: 0;
+  border-inline: 5px solid transparent;
+  border-block-end: 9px solid var(--alarm);
+  filter: drop-shadow(0 0 4px var(--alarm));
+}
+
+.stage-hint {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--parch-dim);
+  text-shadow: 0 1px 4px rgb(0 0 0 / 0.9);
+}
+
+.scroll-cue {
+  font-family: var(--font-carved);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  color: var(--rune);
+  text-decoration: none;
+  text-shadow: 0 0 10px var(--rune-glow), 0 1px 4px rgb(0 0 0 / 0.9);
+}
+
+.scroll-cue:hover {
+  color: var(--rune-strong);
+}
+
+/* =============================================================================
+   8. TOASTS
+   ============================================================================= */
+.toasts {
+  position: absolute;
+  top: calc(var(--hud-h) + 10px);
+  left: calc(var(--journal-space) + (100% - var(--journal-space)) / 2);
+  translate: -50% 0;
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 1.15rem 0.6rem 0.85rem;
+  border-radius: 14px;
+  background:
+    var(--grain),
+    linear-gradient(180deg, rgb(42 54 50 / 0.96), rgb(22 30 27 / 0.96));
+  background-size: 220px 220px, auto;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 0 0 1px rgb(142 247 226 / 0.35),
+    0 0 26px rgb(110 240 214 / 0.18),
+    0 12px 30px rgb(0 0 0 / 0.5);
+  animation: toast-in 520ms cubic-bezier(.2, 1.3, .4, 1) both;
+}
+
+.toast.is-leaving {
+  animation: toast-out 420ms ease both;
+}
+
+.toast-gem {
+  flex: none;
+  inline-size: 14px;
+  block-size: 14px;
+  rotate: 45deg;
+  border-radius: 3px;
+  background: radial-gradient(circle at 35% 35%, #fff, var(--rune) 55%, #2fae98);
+  box-shadow: 0 0 12px var(--rune-glow);
+}
+
+.toast--codex .toast-gem {
+  background: radial-gradient(circle at 35% 35%, #fff, var(--ember) 55%, var(--ember-deep));
+  box-shadow: 0 0 12px var(--ember-glow);
+}
+
+.toast--alarm .toast-gem {
+  background: radial-gradient(circle at 35% 35%, #fff, var(--alarm) 55%, #b04a10);
+  box-shadow: 0 0 12px rgb(255 138 61 / 0.6);
+}
+
+.toast-kicker {
+  display: block;
+  font-family: var(--font-carved);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  color: var(--rune);
+}
+
+.toast--codex .toast-kicker {
+  color: var(--ember);
+}
+
+.toast--alarm .toast-kicker {
+  color: var(--alarm);
+}
+
+.toast-text {
+  display: block;
+  font-size: 1rem;
+  color: var(--parch);
+}
+
+.toast--rank {
+  padding: 0.85rem 1.6rem;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 0 0 1px rgb(255 201 106 / 0.6),
+    0 0 40px rgb(255 190 90 / 0.25),
+    0 12px 30px rgb(0 0 0 / 0.5);
+}
+
+.toast--rank .toast-text {
+  font-family: var(--font-logo);
+  font-size: 1.35rem;
+  color: #ffe9b8;
+  text-shadow: 0 0 14px var(--ember-glow);
+}
+
+.toast--rank .toast-kicker {
+  color: var(--ember);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    translate: 0 -14px;
+    scale: 0.92;
+  }
+}
+
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    translate: 0 -10px;
+  }
+}
+
+/* =============================================================================
+   9. CODEX ENTRY (parchment)
+   ============================================================================= */
+.codex {
+  position: fixed;
+  inset: auto;
+  inline-size: min(22rem, calc(100vw - 2rem));
+  margin: 0;
+  padding: 1.6rem 1.3rem 1.2rem;
+  border: 0;
+  border-radius: 6px 9px 7px 10px;
+  color: var(--ink-text);
+  background:
+    radial-gradient(120% 90% at 50% 50%, transparent 55%, rgb(120 80 30 / 0.35) 100%),
+    var(--grain),
+    linear-gradient(170deg, #f3e7c8, #e6d4aa);
+  background-size: auto, 220px 220px, auto;
+  box-shadow:
+    0 0 0 1px rgb(90 60 20 / 0.4),
+    0 24px 60px rgb(0 0 0 / 0.6);
+  overflow: visible;
+}
+
+.codex:popover-open {
+  animation: codex-in 360ms cubic-bezier(.2, 1.3, .4, 1);
+}
+
+@keyframes codex-in {
+  from {
+    opacity: 0;
+    scale: 0.9;
+    translate: 0 8px;
+  }
+}
+
+.codex::backdrop {
+  background: transparent;
+}
+
+.codex-ribbon {
+  position: absolute;
+  top: -0.85rem;
+  left: 1rem;
+  padding: 0.25rem 0.9rem;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #2c5a3a, #1b3a25);
+  color: #e9fff4;
+  font-family: var(--font-carved);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.15);
+}
+
+.codex-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.codex-head h3 {
+  font-family: var(--font-logo);
+  font-weight: 400;
+  font-size: 1.45rem;
+  line-height: 1.1;
+  color: #2a1f12;
+}
+
+.codex-close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  inline-size: 30px;
+  block-size: 30px;
+  margin: -0.3rem -0.4rem 0 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(90 60 20 / 0.1);
+  color: #5a4122;
+  cursor: pointer;
+}
+
+.codex-close svg {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.codex-close:hover {
+  background: rgb(90 60 20 / 0.2);
+}
+
+.codex-what {
+  margin-block: 0.55rem 0.9rem;
+  font-size: 1.02rem;
+  line-height: 1.45;
+}
+
+.codex-trade {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding-block-start: 0.8rem;
+  border-block-start: 1px dashed rgb(90 60 20 / 0.35);
+}
+
+.codex-trade div {
+  display: grid;
+  grid-template-columns: 5.2rem 1fr;
+  gap: 0.6rem;
+}
+
+.codex-trade dt {
+  font-family: var(--font-carved);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  color: #6b4a1e;
+  padding-block-start: 0.15rem;
+}
+
+.codex-trade dd {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.4;
+}
+
+.trade-arrow {
+  display: inline-block;
+  inline-size: 1.1em;
+  color: #b06a14;
+}
+
+.trade-arrow--in {
+  color: #1d7d6b;
+}
+
+/* =============================================================================
+   10. SPIRIT LENS DIALOG
+   ============================================================================= */
+.lens {
+  inline-size: min(52rem, calc(100vw - 2rem));
+  max-block-size: calc(100dvh - 2rem);
+  padding: 1.4rem 1.5rem 1.5rem;
+  border: 0;
+  overflow: auto;
+}
+
+.lens::backdrop {
+  background: rgb(2 6 5 / 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.lens[open] {
+  animation: codex-in 420ms cubic-bezier(.2, 1.2, .4, 1);
+}
+
+.lens-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-block-end: 1rem;
+}
+
+.lens-head h2 {
+  font-family: var(--font-carved);
+  font-weight: 400;
+  font-size: 1.15rem;
+  letter-spacing: 0.1em;
+  color: var(--rune-strong);
+  text-shadow: 0 0 12px var(--rune-glow);
+}
+
+.lens-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.lens-actions form {
+  margin: 0;
+}
+
+.lens-body {
+  display: grid;
+  gap: 1rem;
+}
+
+.lens-frame {
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px var(--stone-edge), 0 0 0 5px rgb(0 0 0 / 0.35), inset 0 0 30px rgb(0 0 0 / 0.5);
+}
+
+.lens-frame img {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+}
+
+.lens-frame img[hidden] {
+  display: none;
+}
+
+.lens-body p {
+  color: var(--parch-2);
+  font-size: 1.02rem;
+}
+
+.lens-body strong {
+  color: #ffe2a0;
+}
+
+/* =============================================================================
+   11. LORE TABLETS & RIDDLES
+   ============================================================================= */
+.lore,
+.riddles {
+  position: relative;
+  padding: clamp(4rem, 9vw, 7rem) clamp(1.2rem, 6vw, 5rem);
+  display: grid;
+  gap: clamp(2.2rem, 4vw, 3.4rem);
+  justify-items: center;
+}
+
+.lore {
+  background:
+    radial-gradient(60% 50% at 20% 10%, rgb(60 140 110 / 0.12), transparent 70%),
+    radial-gradient(50% 45% at 85% 60%, rgb(255 190 90 / 0.06), transparent 70%),
+    var(--ink-1);
+}
+
+.riddles {
+  padding-block-start: 1rem;
+  background:
+    radial-gradient(55% 45% at 75% 20%, rgb(60 140 110 / 0.1), transparent 70%),
+    linear-gradient(var(--ink-1), var(--ink-0));
+}
+
+.section-head {
+  display: grid;
+  gap: 0.6rem;
+  text-align: center;
+  max-inline-size: 44rem;
+}
+
+.section-kicker {
+  font-family: var(--font-carved);
+  font-size: 0.82rem;
+  letter-spacing: 0.32em;
+  color: var(--rune);
+}
+
+.section-title {
+  font-family: var(--font-logo);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 1.3rem + 2.2vw, 3rem);
+  line-height: 1.1;
+}
+
+.section-sub {
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--parch-dim);
+}
+
+.tablet-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: clamp(1.4rem, 3vw, 2.2rem);
+  inline-size: min(100%, 72rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lore-tablet {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 0.75rem;
+  padding: 2.4rem 1.7rem 2rem;
+  text-align: center;
+}
+
+.lore-num {
+  display: grid;
+  place-items: center;
+  inline-size: 3.6rem;
+  block-size: 3.6rem;
+  margin-block-end: 0.3rem;
+  border-radius: 50%;
+  font-family: var(--font-carved);
+  font-size: 1.3rem;
+  color: var(--rune-strong);
+  text-shadow: 0 0 12px var(--rune-glow);
+  background: radial-gradient(circle at 35% 30%, #45564f, #232e2b 70%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.16),
+    inset 0 -4px 8px rgb(0 0 0 / 0.5),
+    0 0 0 1px var(--stone-edge),
+    0 0 0 4px rgb(0 0 0 / 0.25),
+    0 0 24px rgb(110 240 214 / 0.18);
+}
+
+.lore-tablet h3 {
+  font-family: var(--font-lore);
+  font-weight: 700;
+  font-size: 1.3rem;
+  line-height: 1.2;
+  color: #f7efdb;
+}
+
+.lore-tablet p {
+  font-size: 1.04rem;
+  color: var(--parch-2);
+}
+
+.riddle-list {
+  display: grid;
+  gap: 0.9rem;
+  inline-size: min(100%, 46rem);
+}
+
+.riddle {
+  border-radius: 14px;
+  background:
+    var(--grain),
+    linear-gradient(180deg, #2c3a35, #1c2623);
+  background-size: 220px 220px, auto;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    inset 0 -3px 8px rgb(0 0 0 / 0.4),
+    0 0 0 1px var(--stone-edge),
+    0 12px 30px rgb(0 0 0 / 0.35);
+}
+
+.riddle summary {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem 1.2rem;
+  list-style: none;
+  cursor: pointer;
+  font-size: 1.12rem;
+  font-weight: 500;
+  color: var(--parch);
+}
+
+.riddle summary::-webkit-details-marker {
+  display: none;
+}
+
+.riddle summary:hover {
+  color: #fff;
+}
+
+.riddle-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border-radius: 50%;
+  font-family: var(--font-carved);
+  color: var(--ember);
+  text-shadow: 0 0 8px var(--ember-glow);
+  background: rgb(0 0 0 / 0.3);
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 201 106 / 0.35);
+  transition: rotate 300ms ease;
+}
+
+.riddle[open] .riddle-mark {
+  rotate: 360deg;
+  color: var(--rune);
+  text-shadow: 0 0 8px var(--rune-glow);
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(142 247 226 / 0.45);
+}
+
+.riddle-answer {
+  margin: 0 0.8rem 0.8rem;
+  padding: 1rem 1.2rem;
+  border-radius: 6px 9px 7px 10px;
+  color: var(--ink-text);
+  font-size: 1.06rem;
+  background:
+    radial-gradient(120% 90% at 50% 50%, transparent 55%, rgb(120 80 30 / 0.3) 100%),
+    var(--grain),
+    linear-gradient(170deg, #f3e7c8, #e6d4aa);
+  background-size: auto, 220px 220px, auto;
+  box-shadow: 0 0 0 1px rgb(90 60 20 / 0.35);
+}
+
+.riddle[open] .riddle-answer {
+  animation: chapter-in 420ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.riddle-answer strong {
+  color: #7a3f0c;
+}
+
+.back-to-game {
+  margin-block-start: 1rem;
+}
+
+/* =============================================================================
+   12. RESPONSIVE
+   ============================================================================= */
+@media (max-width: 1100px) {
+  .stage-hint {
+    display: none;
+  }
+
+  .lore-word {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .hud-brand-name {
+    display: none;
+  }
+
+  .legend {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --hud-h: 62px;
+    --edge: 10px;
+  }
+
+  .game {
+    --journal-space: var(--edge);
+  }
+
+  .emblem {
+    inline-size: 34px;
+    block-size: 34px;
+  }
+
+  .lore-meter {
+    gap: 0.55rem;
+    padding: 0.4rem 0.7rem;
+  }
+
+  .rune-sockets {
+    gap: 0.32rem;
+  }
+
+  .rune-sockets li {
+    inline-size: 7px;
+    block-size: 7px;
+  }
+
+  .rune-sockets li:nth-child(5) {
+    margin-inline-end: 0.15rem;
+  }
+
+  .lore-rank {
+    display: none;
+  }
+
+  .dial-label {
+    display: none;
+  }
+
+  .celestial-dial {
+    padding: 3px;
+  }
+
+  .dial-window {
+    inline-size: 38px;
+    block-size: 38px;
+  }
+
+  .hud-top {
+    gap: 0.45rem;
+  }
+
+  .hud-actions {
+    gap: 0.38rem;
+  }
+
+  .hud-icon {
+    min-inline-size: 44px;
+    min-block-size: 44px;
+  }
+
+  .title-sfx {
+    top: calc((var(--hud-h) - 44px) / 2);
+  }
+
+  /* Journal becomes a bottom sheet */
+  .journal {
+    left: var(--edge);
+    right: var(--edge);
+    top: auto;
+    bottom: var(--edge);
+    inline-size: auto;
+    max-block-size: 50svh;
+    padding: 0.9rem 1rem 0.9rem;
+  }
+
+  .game[data-screen="title"] .journal {
+    transform: translateY(40px);
+  }
+
+  .chapter-path [role="tab"] {
+    inline-size: 2.4rem;
+    block-size: 2.4rem;
+  }
+
+  .chapter-title {
+    font-size: 1.22rem;
+  }
+
+  .chapter-text,
+  .pitch blockquote {
+    font-size: 0.98rem;
+  }
+
+  /* View bar moves under the top HUD */
+  .hud-bottom {
+    left: var(--edge);
+    right: var(--edge);
+    top: calc(var(--hud-h) + 4px);
+    bottom: auto;
+    justify-content: center;
+  }
+
+  .game[data-screen="title"] .hud-bottom {
+    transform: translateY(-16px);
+  }
+
+  .hud-bottom-right {
+    display: none;
+  }
+
+  .view-bar {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .view-btn {
+    padding: 0.42rem 0.6rem;
+    font-size: 0.76rem;
+  }
+
+  .toasts {
+    left: 50%;
+    top: calc(var(--hud-h) + 56px);
+    inline-size: calc(100% - 2rem);
+  }
+
+  /* Title: lockup on top, menu at the bottom, diorama in between */
+  .title-screen {
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    padding: 9vh 1.25rem 7vh;
+  }
+
+  .title-lockup {
+    justify-items: center;
+  }
+
+  .title-kicker {
+    font-size: 0.72rem;
+    letter-spacing: 0.24em;
+  }
+
+  .menu-list {
+    justify-items: center;
+  }
+
+  .menu-item {
+    padding-inline: 2rem;
+  }
+
+  .menu-item:is(:hover, :focus-visible) {
+    translate: 0 0;
+  }
+
+  .atmosphere::before {
+    background: linear-gradient(180deg, rgb(2 8 6 / 0.85) 0%, rgb(2 8 6 / 0.2) 32%, rgb(2 8 6 / 0.2) 60%, rgb(2 8 6 / 0.88) 100%);
+  }
+
+  .title-hint {
+    display: none;
+  }
+
+  .foliage--left,
+  .foliage--right {
+    opacity: 0.8;
+  }
+}
+
+/* =============================================================================
+   13. MOTION PREFERENCES
+   ============================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .hud-icon[aria-pressed="true"],
+  .view-btn[aria-pressed="true"],
+  .chapter-path [role="tab"][aria-selected="true"] {
+    outline: 2px solid Highlight;
+  }
+}

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#06110d">
+  <title>The Wood Wide Web — How Trees &amp; Fungi Talk Underground</title>
+  <meta name="description" content="An interactive 3D forest quest: discover how trees and fungi trade sugar, minerals and warnings through the underground wood wide web.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='23' fill='%2306110d'/%3E%3Cpath d='M24 6 L31 17 H27.5 L33 25 H15 L20.5 17 H17 Z' fill='%238ef7e2'/%3E%3Cpath d='M6 25.5 H42' stroke='%238ef7e2' stroke-width='2'/%3E%3Cpath d='M24 25.5 V31 M24 31 C20 33 18 36 13 38 M24 31 C28 33 30 36 35 38 M24 33 V41' fill='none' stroke='%23ffc96a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,700;1,400;1,500&amp;family=Marcellus+SC&amp;family=Uncial+Antiqua&amp;display=swap">
+  <!-- Bump ?v= after editing a file: python's http.server sends no cache headers,
+       so a normal reload keeps running the browser's old copy -->
+  <link rel="stylesheet" href="styles.css?v=2">
+
+  <!-- three.js for the 3D engine (engine.js imports it lazily through this map) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script defer src="scene_3d_data.js"></script>
+  <script defer src="engine.js?v=2"></script>
+  <script defer src="sfx.js?v=2"></script>
+  <script defer src="app.js?v=2"></script>
+</head>
+<body>
+  <a href="#journal" class="skip-link">Skip to the quest journal</a>
+
+  <main>
+    <!-- =====================================================================
+         GAME SCREEN — full-bleed 3D world with title menu + in-game HUD
+         ===================================================================== -->
+    <section class="game" id="game" data-screen="title" aria-label="The Wood Wide Web — interactive 3D forest">
+      <canvas
+        id="world"
+        role="img"
+        aria-label="A 3D forest diorama cut away to show the soil: an elder fir, a paper birch, a shaded sapling and a white ghost pipe stand above copper tree roots woven together by glowing fungal threads."
+      ></canvas>
+      <img class="world-fallback" id="world-fallback" src="renders/overview_day_3d.png" alt="Blender render of the forest diorama with roots and glowing fungal threads underground." hidden>
+
+      <div class="atmosphere" aria-hidden="true"></div>
+      <svg class="foliage foliage--left" id="foliage-left" aria-hidden="true"></svg>
+      <svg class="foliage foliage--right" id="foliage-right" aria-hidden="true"></svg>
+
+      <!-- Codex markers projected onto the 3D scene -->
+      <div class="pins" id="pins">
+        <button type="button" class="pin" data-pin="fir"><span class="pin-mark" aria-hidden="true"></span><span class="pin-label">Elder Fir</span></button>
+        <button type="button" class="pin" data-pin="sapling"><span class="pin-mark" aria-hidden="true"></span><span class="pin-label">Baby Sapling</span></button>
+        <button type="button" class="pin" data-pin="birch"><span class="pin-mark" aria-hidden="true"></span><span class="pin-label">Paper Birch</span></button>
+        <button type="button" class="pin" data-pin="mycelium"><span class="pin-mark" aria-hidden="true"></span><span class="pin-label">Fungal Web</span></button>
+        <button type="button" class="pin" data-pin="ghost"><span class="pin-mark" aria-hidden="true"></span><span class="pin-label">Ghost Pipe</span></button>
+      </div>
+
+      <!-- ---------------------------------------------------------- TITLE -->
+      <div class="title-screen" id="title-screen">
+        <div class="title-lockup">
+          <p class="title-kicker"><span aria-hidden="true">✦</span> An underground field guide <span aria-hidden="true">✦</span></p>
+          <h1 class="title-logo" id="main-title" tabindex="-1">
+            <span class="title-logo-line">The Wood</span>
+            <span class="title-logo-line title-logo-line--big">Wide Web</span>
+          </h1>
+          <p class="title-sub">How trees &amp; fungi talk beneath your feet</p>
+        </div>
+
+        <nav class="title-menu" aria-label="Main menu">
+          <ul class="menu-list" id="menu-main" role="list">
+            <li><button type="button" class="menu-item" data-action="begin">Begin the Quest</button></li>
+            <li><button type="button" class="menu-item" data-action="chapters">Chapter Select</button></li>
+            <li><button type="button" class="menu-item" data-action="lore">Read the Lore</button></li>
+          </ul>
+          <ul class="menu-list menu-list--chapters" id="menu-chapters" role="list" hidden>
+            <li><button type="button" class="menu-item" data-chapter="0"><span class="menu-num">I</span>Leaves &amp; Rocks</button></li>
+            <li><button type="button" class="menu-item" data-chapter="1"><span class="menu-num">II</span>The Underground Pact</button></li>
+            <li><button type="button" class="menu-item" data-chapter="2"><span class="menu-num">III</span>Kinship Network</button></li>
+            <li><button type="button" class="menu-item" data-chapter="3"><span class="menu-num">IV</span>Whispering Wires</button></li>
+            <li><button type="button" class="menu-item" data-chapter="4"><span class="menu-num">V</span>The Ghost Bandit</button></li>
+            <li><button type="button" class="menu-item menu-item--back" data-action="back">Back</button></li>
+          </ul>
+        </nav>
+
+        <button type="button" class="hud-icon title-sfx" id="title-sfx-toggle" aria-pressed="true" aria-label="Forest sound">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-sound-on"><path d="M4.5 9.5H8l4.5-4v13l-4.5-4H4.5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.2 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-sound-off"><path d="M4.5 9.5H8l4.5-4v13l-4.5-4H4.5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Z" fill="currentColor" opacity=".6"/><path d="m16 9.5 5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg>
+        </button>
+
+        <p class="title-hint" aria-hidden="true">Press <kbd>Enter</kbd> to begin</p>
+      </div>
+
+      <!-- ------------------------------------------------------------ HUD -->
+      <header class="hud-top" id="hud-top">
+        <button type="button" class="hud-brand" id="menu-btn" aria-label="Back to the main menu">
+          <svg class="emblem" viewBox="0 0 48 48" aria-hidden="true">
+            <circle cx="24" cy="24" r="21.5" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/>
+            <path d="M24 6 L31 17 H27.5 L33 25 H15 L20.5 17 H17 Z" fill="currentColor"/>
+            <path d="M5 25.5 H43" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M24 25.5 V31 M24 31 C20 33 18 36 13 38 M24 31 C28 33 30 36 35 38 M24 33 V41 M19 34.5 C17 34 15 33.5 11 34 M29 34.5 C31 34 33 33.5 37 34" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" class="emblem-roots"/>
+          </svg>
+          <span class="hud-brand-name">The Wood Wide Web</span>
+        </button>
+
+        <div class="lore-meter" id="lore-meter">
+          <ol class="rune-sockets" id="rune-sockets" aria-hidden="true">
+            <li data-lore="step-0"></li><li data-lore="step-1"></li><li data-lore="step-2"></li><li data-lore="step-3"></li><li data-lore="step-4"></li>
+            <li data-lore="pin-fir" class="is-codex"></li><li data-lore="pin-sapling" class="is-codex"></li><li data-lore="pin-birch" class="is-codex"></li><li data-lore="pin-mycelium" class="is-codex"></li><li data-lore="pin-ghost" class="is-codex"></li>
+          </ol>
+          <p class="lore-text" id="lore-label">
+            <span class="lore-count"><span id="lore-count">0</span><span class="lore-of">/10</span></span>
+            <span class="lore-word">Lore</span>
+            <span class="lore-rank" id="lore-rank">Sprout Scout</span>
+          </p>
+          <progress class="visually-hidden" id="lore-progress" max="10" value="0" aria-labelledby="lore-label"></progress>
+        </div>
+
+        <div class="hud-actions">
+          <button type="button" class="celestial-dial" id="time-toggle">
+            <span class="dial-window" aria-hidden="true">
+              <span class="dial-disc">
+                <span class="dial-sun"></span>
+                <span class="dial-moon"></span>
+                <span class="dial-star dial-star--a"></span>
+                <span class="dial-star dial-star--b"></span>
+              </span>
+            </span>
+            <span class="dial-label" id="time-label">Day</span>
+          </button>
+          <button type="button" class="hud-icon" id="sfx-toggle" aria-pressed="true" aria-label="Forest sound">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-sound-on"><path d="M4.5 9.5H8l4.5-4v13l-4.5-4H4.5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.2 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-sound-off"><path d="M4.5 9.5H8l4.5-4v13l-4.5-4H4.5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Z" fill="currentColor" opacity=".6"/><path d="m16 9.5 5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" class="hud-icon" id="motion-toggle" aria-pressed="false" aria-label="Pause animation">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-pause"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-play"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- --------------------------------------------------- QUEST JOURNAL -->
+      <aside class="journal tablet" id="journal" aria-label="Quest journal" tabindex="-1">
+        <div class="journal-head">
+          <p class="journal-kicker"><span class="rune-glyph" aria-hidden="true">ᛟ</span> Quest Journal</p>
+          <button type="button" class="journal-toggle" id="journal-toggle" aria-expanded="true" aria-controls="journal-body">
+            <span class="journal-toggle-text">Hide</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <div class="journal-body" id="journal-body">
+          <div class="chapter-path" role="tablist" aria-label="Chapters">
+            <button type="button" role="tab" id="tab-1" aria-controls="panel-1" aria-selected="true" data-step="0" title="Vitamins"><span class="stone-num">I</span><span class="visually-hidden">Chapter I: Vitamins</span></button>
+            <button type="button" role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1" data-step="1" title="Swap"><span class="stone-num">II</span><span class="visually-hidden">Chapter II: Swap</span></button>
+            <button type="button" role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" tabindex="-1" data-step="2" title="Rescue"><span class="stone-num">III</span><span class="visually-hidden">Chapter III: Rescue</span></button>
+            <button type="button" role="tab" id="tab-4" aria-controls="panel-4" aria-selected="false" tabindex="-1" data-step="3" title="Alarm"><span class="stone-num">IV</span><span class="visually-hidden">Chapter IV: Alarm</span></button>
+            <button type="button" role="tab" id="tab-5" aria-controls="panel-5" aria-selected="false" tabindex="-1" data-step="4" title="Heist"><span class="stone-num">V</span><span class="visually-hidden">Chapter V: Heist</span></button>
+          </div>
+
+          <div class="panels">
+            <!-- Chapter I -->
+            <section role="tabpanel" id="panel-1" aria-labelledby="tab-1" tabindex="0" class="chapter">
+              <p class="chapter-kicker">Chapter I · The Sanctuary Mystery</p>
+              <h2 class="chapter-title">Leaves brew sugar, while rocks lock away vitamins</h2>
+              <p class="chapter-text">Up in the sunlit canopy, leaves easily brew sweet <strong>sugar</strong>. Deep underground, vital <strong>water and minerals</strong> hide inside microscopic rock crevices — far too narrow for woody tree roots to reach alone.</p>
+              <figure class="pitch">
+                <figcaption><span>Campfire line</span><button type="button" class="pitch-copy" data-copy-pitch="Trees make food from sunlight, and fungi can squeeze into tiny rock cracks—so they team up.">Copy</button></figcaption>
+                <blockquote>“Trees make food from sunlight, and fungi can squeeze into tiny rock cracks — so they team up.”</blockquote>
+              </figure>
+              <div class="quest">
+                <p class="quest-label">Field mission</p>
+                <button type="button" class="quest-action" data-goto-cam="underground" data-quest="q1"><span class="quest-check" aria-hidden="true"></span><span>Dive the camera into the root wires</span></button>
+              </div>
+            </section>
+
+            <!-- Chapter II -->
+            <section role="tabpanel" id="panel-2" aria-labelledby="tab-2" hidden class="chapter">
+              <p class="chapter-kicker">Chapter II · The Underground Pact</p>
+              <h2 class="chapter-title">Fungi trade rock minerals for sweet tree sugar</h2>
+              <p class="chapter-text">Ultra-fine glowing <strong>fungal threads</strong> mine those cyan rock crystals and coil around root tips like a living glove. Right at that handshake, fungi hand over water and fertilizer — and get paid in golden sugar.</p>
+              <figure class="pitch">
+                <figcaption><span>Campfire line</span><button type="button" class="pitch-copy" data-copy-pitch="Fungi act like underground personal shoppers—delivering water and fertilizer to roots and getting paid in sugar.">Copy</button></figcaption>
+                <blockquote>“Fungi act like underground personal shoppers — delivering water and fertilizer to roots and getting paid in sugar.”</blockquote>
+              </figure>
+              <div class="quest">
+                <p class="quest-label">Field mission</p>
+                <button type="button" class="quest-action" data-open-closeup data-quest="q2"><span class="quest-check" aria-hidden="true"></span><span>Inspect the root handshake up close</span></button>
+              </div>
+            </section>
+
+            <!-- Chapter III -->
+            <section role="tabpanel" id="panel-3" aria-labelledby="tab-3" hidden class="chapter">
+              <p class="chapter-kicker">Chapter III · Kinship Network</p>
+              <h2 class="chapter-title">Sunlit elder trees help feed shaded saplings</h2>
+              <p class="chapter-text">One fungal web links the whole glade at once. Tall trees bathing in bright sunlight pour extra sugar into the shared threads, where it flows into tiny <strong>baby saplings</strong> struggling in deep forest shade.</p>
+              <figure class="pitch">
+                <figcaption><span>Campfire line</span><button type="button" class="pitch-copy" data-copy-pitch="Tall sunlit trees share extra sugar through the fungal web to keep shaded baby trees alive.">Copy</button></figcaption>
+                <blockquote>“Tall sunlit trees share extra sugar through the fungal web to keep shaded baby trees alive.”</blockquote>
+              </figure>
+              <div class="quest">
+                <p class="quest-label">Field mission · Test the canopy sunlight</p>
+                <div class="sun-control">
+                  <div class="sun-control-head">
+                    <label for="sunlight-slider">Sunbeam power</label>
+                    <output id="sunlight-readout" for="sunlight-slider">85%</output>
+                  </div>
+                  <input type="range" id="sunlight-slider" class="rune-slider" min="10" max="100" step="1" value="85" aria-valuetext="85% canopy sunlight">
+                </div>
+              </div>
+            </section>
+
+            <!-- Chapter IV -->
+            <section role="tabpanel" id="panel-4" aria-labelledby="tab-4" hidden class="chapter">
+              <p class="chapter-kicker">Chapter IV · Whispering Wires</p>
+              <h2 class="chapter-title">Bitten trees broadcast underground bug alarms</h2>
+              <p class="chapter-text">When caterpillars chew on the Elder Fir, distress molecules surge down its roots and race across the fungal highway. Neighboring <strong>Paper Birches</strong> sense the warning and brew bitter bug-repellent early.</p>
+              <figure class="pitch">
+                <figcaption><span>Campfire line</span><button type="button" class="pitch-copy" data-copy-pitch="When bugs bite one tree, a chemical alarm ripples through fungal wires so neighbor trees brew bug spray early.">Copy</button></figcaption>
+                <blockquote>“When bugs bite one tree, a chemical alarm ripples through fungal wires so neighbor trees brew bug spray early.”</blockquote>
+              </figure>
+              <div class="quest">
+                <p class="quest-label">Field mission</p>
+                <button type="button" class="quest-action quest-action--danger" id="trigger-attack-btn" data-quest="q4"><span class="quest-check" aria-hidden="true"></span><span>Launch a caterpillar attack</span></button>
+              </div>
+            </section>
+
+            <!-- Chapter V -->
+            <section role="tabpanel" id="panel-5" aria-labelledby="tab-5" hidden class="chapter">
+              <p class="chapter-kicker">Chapter V · The Shadow Twist</p>
+              <h2 class="chapter-title">Ghostly white plants hack the web for free sugar</h2>
+              <p class="chapter-text">Spot the pale <strong>Ghost Pipe</strong> on the right? It has zero green chlorophyll and makes zero food from sunlight. Instead, it taps straight into the fungal wires to siphon tree sugar without paying anything back.</p>
+              <figure class="pitch">
+                <figcaption><span>Campfire line</span><button type="button" class="pitch-copy" data-copy-pitch="Even forests have hackers—waxy white ghost plants plug into the fungal web to siphon free tree sugar.">Copy</button></figcaption>
+                <blockquote>“Even forests have hackers — waxy white ghost plants plug into the fungal web to siphon free tree sugar.”</blockquote>
+              </figure>
+              <div class="quest">
+                <p class="quest-label">Field mission</p>
+                <button type="button" class="quest-action" data-goto-cam="ghost" data-quest="q5"><span class="quest-check" aria-hidden="true"></span><span>Track down the ghost pipe bandit</span></button>
+              </div>
+            </section>
+          </div>
+
+          <nav class="journal-nav" aria-label="Chapter navigation">
+            <button type="button" class="carved-btn" id="prev-step-btn"><span aria-hidden="true">‹</span> Prev</button>
+            <span class="step-counter" id="step-counter">Chapter I of V</span>
+            <button type="button" class="carved-btn carved-btn--glow" id="next-step-btn">Next <span aria-hidden="true">›</span></button>
+          </nav>
+        </div>
+      </aside>
+
+      <!-- ------------------------------------------------ BOTTOM HUD BAR -->
+      <div class="hud-bottom" id="hud-bottom">
+        <div class="view-bar" role="group" aria-label="Camera views">
+          <button type="button" class="view-btn" data-cam="cutaway" aria-pressed="true">Sanctuary</button>
+          <button type="button" class="view-btn" data-cam="underground" aria-pressed="false">Root Wires</button>
+          <button type="button" class="view-btn" data-cam="top" aria-pressed="false">Canopy</button>
+          <span class="view-sep" aria-hidden="true"></span>
+          <button type="button" class="view-btn view-btn--toggle" id="soil-xray-btn" aria-pressed="true">X-Ray Soil</button>
+        </div>
+        <div class="hud-bottom-right">
+          <ul class="legend" role="list" aria-label="Legend">
+            <li><span class="legend-mark legend-mark--sugar" aria-hidden="true"></span>Sugar</li>
+            <li><span class="legend-mark legend-mark--mineral" aria-hidden="true"></span>Minerals</li>
+            <li><span class="legend-mark legend-mark--alarm" aria-hidden="true"></span>Bug alarm</li>
+          </ul>
+          <p class="stage-hint" id="stage-hint">Drag to orbit · Pinch or ⌘ + scroll to zoom</p>
+          <a class="scroll-cue" href="#lore">Lore tablets <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+
+      <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+      <p id="sim-live-status" class="visually-hidden" aria-live="polite"></p>
+      <p class="engine-status" id="engine-status" role="status">Growing the forest…</p>
+    </section>
+
+    <!-- =====================================================================
+         LORE TABLETS + RIDDLES
+         ===================================================================== -->
+    <section class="lore" id="lore" aria-labelledby="lore-heading">
+      <div class="section-head">
+        <p class="section-kicker"><span aria-hidden="true">✦</span> Lore tablets <span aria-hidden="true">✦</span></p>
+        <h2 id="lore-heading" class="section-title">Explain the whole secret in 30 seconds</h2>
+        <p class="section-sub">Three truths anyone can picture right away.</p>
+      </div>
+
+      <ol class="tablet-row" role="list">
+        <li class="lore-tablet tablet">
+          <span class="lore-num" aria-hidden="true">I</span>
+          <h3>Mushrooms are only the fruit</h3>
+          <p>Nearly the entire fungus lives out of sight underground as miles of glowing threads weaving tree roots together.</p>
+        </li>
+        <li class="lore-tablet tablet">
+          <span class="lore-num" aria-hidden="true">II</span>
+          <h3>Sugar trades for rock minerals</h3>
+          <p>Trees pay fungi with sunlit carbon sugar; fungi pay trees back with deep water, nitrogen and phosphorus.</p>
+        </li>
+        <li class="lore-tablet tablet">
+          <span class="lore-num" aria-hidden="true">III</span>
+          <h3>One web links the neighborhood</h3>
+          <p>Shared fungal bridges let extra sugar reach shaded seedlings and carry chemical bug-attack warnings between trees.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="riddles" aria-labelledby="riddles-heading">
+      <div class="section-head">
+        <p class="section-kicker"><span aria-hidden="true">✦</span> Campfire riddles <span aria-hidden="true">✦</span></p>
+        <h2 id="riddles-heading" class="section-title">Three questions listeners always ask</h2>
+        <p class="section-sub">Open a scroll to reveal the real forest science.</p>
+      </div>
+
+      <div class="riddle-list">
+        <details class="riddle">
+          <summary><span class="riddle-mark" aria-hidden="true">?</span><span>Do big trees “think” like brains when feeding baby saplings?</span></summary>
+          <div class="riddle-answer"><p>No brains required! Sugar naturally flows from full, sunlit roots toward hungry, shaded roots — and the fungus keeps young trees alive so it preserves future sugar-paying partners.</p></div>
+        </details>
+        <details class="riddle">
+          <summary><span class="riddle-mark" aria-hidden="true">?</span><span>What happens if a tree or fungus tries to cheat the deal?</span></summary>
+          <div class="riddle-answer"><p>Both sides bargain like a bustling market: fungi route more minerals toward generous sugar-paying roots, while trees pinch off sugar to root tips where fungi hoard nutrients.</p></div>
+        </details>
+        <details class="riddle">
+          <summary><span class="riddle-mark" aria-hidden="true">?</span><span>How fast do underground bug warnings travel?</span></summary>
+          <div class="riddle-answer"><p>Roughly <strong>24 to 48 hours</strong> — far slower than animal nerves, yet plenty fast enough to beat hungry caterpillars marching from trunk to trunk.</p></div>
+        </details>
+      </div>
+
+      <p class="back-to-game"><a href="#game" class="carved-btn carved-btn--glow">Return to the forest <span aria-hidden="true">↑</span></a></p>
+    </section>
+  </main>
+
+  <!-- Codex entry (opened from the 3D markers) -->
+  <div id="codex" class="codex" popover="auto" aria-labelledby="codex-title">
+    <p class="codex-ribbon" id="codex-tag">Codex entry unlocked</p>
+    <div class="codex-head">
+      <h3 id="codex-title">Elder Fir</h3>
+      <button type="button" class="codex-close" popovertarget="codex" popovertargetaction="hide" aria-label="Close codex entry">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <p class="codex-what" id="codex-what"></p>
+    <dl class="codex-trade">
+      <div><dt><span class="trade-arrow" aria-hidden="true">↑</span> Gives</dt><dd id="codex-gives"></dd></div>
+      <div><dt><span class="trade-arrow trade-arrow--in" aria-hidden="true">↓</span> Gets</dt><dd id="codex-gets"></dd></div>
+    </dl>
+  </div>
+
+  <!-- Spirit lens: Blender macro render of the root handshake -->
+  <dialog id="closeup-dialog" class="lens tablet" aria-labelledby="closeup-title">
+    <div class="lens-head">
+      <h2 id="closeup-title">Spirit Lens · The root handshake</h2>
+      <div class="lens-actions">
+        <button type="button" class="carved-btn" id="dialog-lighting-btn">View night glow</button>
+        <form method="dialog"><button class="carved-btn" value="close" autofocus>Close</button></form>
+      </div>
+    </div>
+    <div class="lens-body">
+      <div class="lens-frame">
+        <img id="closeup-img-day" src="renders/root_closeup_day_3d.png" width="1360" height="880" alt="Macro Blender render in daylight: copper root wires wrapped by glowing chartreuse and turquoise fungal threads, exchanging golden sugar spheres and cyan mineral droplets.">
+        <img id="closeup-img-night" src="renders/root_closeup_night_3d.png" width="1360" height="880" hidden alt="Macro Blender render at night: bioluminescent fungal threads coiled around dark amber root wires, trading golden sugar and cyan minerals.">
+      </div>
+      <p>Hair-fine fungal filaments coil right around the root (a <strong>Hartig net</strong>), swapping cyan rock minerals for golden tree sugar without ever harming it.</p>
+    </div>
+  </dialog>
+</body>
+</html>
