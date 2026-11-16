@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" width="1200" height="500" role="img" aria-labelledby="arch-title arch-desc">
+  <title id="arch-title">The Wood Wide Web — Technical Architecture</title>
+  <desc id="arch-desc">Architecture diagram showing the offline Blender procedural Python pipeline exporting .blend, .glb, EEVEE AgX renders, and quantized scene_3d_data.js into the zero-build browser runtime powered by index.html, styles.css, app.js, engine.js, and sfx.js.</desc>
+
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06110d"/>
+      <stop offset="55%" stop-color="#091813"/>
+      <stop offset="100%" stop-color="#050e0b"/>
+    </linearGradient>
+    <linearGradient id="panelGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#11211b"/>
+      <stop offset="100%" stop-color="#0a1511"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a2a24"/>
+      <stop offset="100%" stop-color="#121d19"/>
+    </linearGradient>
+
+    <marker id="arrowRune" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8ef7e2"/>
+    </marker>
+    <marker id="arrowGold" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#ffc96a"/>
+    </marker>
+    <marker id="arrowCyan" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#5cc9ff"/>
+    </marker>
+    <marker id="arrowMoss" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#9fc457"/>
+    </marker>
+  </defs>
+
+  <!-- Outer Frame -->
+  <rect x="2" y="2" width="1196" height="496" rx="18" fill="url(#bgGrad)" stroke="#263b33" stroke-width="2"/>
+
+  <!-- Subtle decorative corner glow dots -->
+  <circle cx="24" cy="24" r="3" fill="#8ef7e2" opacity="0.45"/>
+  <circle cx="1176" cy="24" r="3" fill="#8ef7e2" opacity="0.45"/>
+  <circle cx="24" cy="476" r="3" fill="#8ef7e2" opacity="0.45"/>
+  <circle cx="1176" cy="476" r="3" fill="#8ef7e2" opacity="0.45"/>
+
+  <!-- ======================================================================= -->
+  <!-- LEFT PANEL: OFFLINE BLENDER PROCEDURAL PIPELINE                         -->
+  <!-- ======================================================================= -->
+  <rect x="28" y="28" width="484" height="444" rx="14" fill="url(#panelGrad)" stroke="#2d473d" stroke-width="1.5"/>
+  <text x="50" y="58" fill="#8ef7e2" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1.6">✦ OFFLINE BLENDER PROCEDURAL PIPELINE</text>
+  <line x1="50" y1="70" x2="490" y2="70" stroke="#233930" stroke-width="1"/>
+
+  <!-- Node: build_wood_wide_web_blender.py -->
+  <rect x="48" y="186" width="194" height="140" rx="11" fill="url(#cardGrad)" stroke="#ffc96a" stroke-width="1.8"/>
+  <text x="64" y="214" fill="#ffc96a" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="700">build_wood_wide_web</text>
+  <text x="64" y="231" fill="#ffc96a" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="700">_blender.py</text>
+  <line x1="64" y1="243" x2="226" y2="243" stroke="#2d433a" stroke-width="1"/>
+  <text x="64" y="264" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• bpy + bmesh (seed = 42)</text>
+  <text x="64" y="284" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• 6 scene collections</text>
+  <text x="64" y="304" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• Trees, roots &amp; hyphae</text>
+
+  <!-- Output 1: .blend & .glb -->
+  <rect x="294" y="92" width="198" height="96" rx="10" fill="url(#cardGrad)" stroke="#9fc457" stroke-width="1.5"/>
+  <text x="310" y="119" fill="#d9f2a6" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="700">wood_wide_web_3d</text>
+  <text x="310" y="136" fill="#9fc457" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600">.blend  /  .glb</text>
+  <text x="310" y="159" fill="#b9c7bf" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11.5">Blender source &amp; glTF 2.0</text>
+  <text x="310" y="175" fill="#b9c7bf" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11.5">interchange 3D assets</text>
+
+  <!-- Output 2: renders/*.png -->
+  <rect x="294" y="208" width="198" height="96" rx="10" fill="url(#cardGrad)" stroke="#5cc9ff" stroke-width="1.5"/>
+  <text x="310" y="235" fill="#bfeaff" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">renders/*.png</text>
+  <text x="310" y="257" fill="#b9c7bf" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11.5">6× Blender EEVEE AgX</text>
+  <text x="310" y="274" fill="#b9c7bf" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11.5">1360×880 studio renders</text>
+  <text x="310" y="291" fill="#7fc8ec" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11">(Day &amp; Night · Macro &amp; Wide)</text>
+
+  <!-- Output 3: scene_3d_data.js -->
+  <rect x="294" y="324" width="198" height="112" rx="10" fill="url(#cardGrad)" stroke="#8ef7e2" stroke-width="1.8"/>
+  <text x="310" y="351" fill="#d9fff6" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">scene_3d_data.js</text>
+  <text x="310" y="373" fill="#b9c7bf" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11.5">• Quantized Int16 / Int8</text>
+  <text x="310" y="390" fill="#b9c7bf" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11.5">• Physical light rigs (W)</text>
+  <text x="310" y="407" fill="#b9c7bf" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11.5">• 11 spline routes &amp; pins</text>
+
+  <!-- Offline internal arrows -->
+  <path d="M 242 232 C 268 232, 264 140, 290 140" fill="none" stroke="#9fc457" stroke-width="1.8" marker-end="url(#arrowMoss)"/>
+  <path d="M 242 256 L 290 256" fill="none" stroke="#5cc9ff" stroke-width="1.8" marker-end="url(#arrowCyan)"/>
+  <path d="M 242 280 C 268 280, 264 380, 290 380" fill="none" stroke="#8ef7e2" stroke-width="1.8" marker-end="url(#arrowRune)"/>
+
+  <!-- ======================================================================= -->
+  <!-- RIGHT PANEL: ZERO-BUILD BROWSER RUNTIME                                 -->
+  <!-- ======================================================================= -->
+  <rect x="600" y="28" width="572" height="444" rx="14" fill="url(#panelGrad)" stroke="#2d473d" stroke-width="1.5"/>
+  <text x="624" y="58" fill="#8ef7e2" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1.6">✦ ZERO-BUILD BROWSER RUNTIME (VANILLA HTML / CSS / JS)</text>
+  <line x1="624" y1="70" x2="1148" y2="70" stroke="#233930" stroke-width="1"/>
+
+  <!-- Runtime Top-Left: index.html + styles.css -->
+  <rect x="626" y="98" width="232" height="128" rx="11" fill="url(#cardGrad)" stroke="#9fc457" stroke-width="1.6"/>
+  <text x="644" y="125" fill="#e4f5be" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700">index.html + styles.css</text>
+  <line x1="644" y1="137" x2="840" y2="137" stroke="#2d433a" stroke-width="1"/>
+  <text x="644" y="158" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• Carved stone &amp; parchment UI</text>
+  <text x="644" y="178" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• Native &lt;dialog&gt; &amp; popover</text>
+  <text x="644" y="198" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• ES importmap &amp; ARIA tabs</text>
+
+  <!-- Runtime Top-Right: app.js -->
+  <rect x="916" y="98" width="232" height="128" rx="11" fill="url(#cardGrad)" stroke="#ffc96a" stroke-width="1.8"/>
+  <text x="934" y="125" fill="#ffc96a" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13.5" font-weight="700">app.js</text>
+  <text x="992" y="125" fill="#a9a28b" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11.5">(Quest Controller)</text>
+  <line x1="934" y1="137" x2="1130" y2="137" stroke="#2d433a" stroke-width="1"/>
+  <text x="934" y="158" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• 5-chapter state &amp; missions</text>
+  <text x="934" y="178" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• 10 lore runes &amp; 4 ranks</text>
+  <text x="934" y="198" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• 3D pin projection &amp; insets</text>
+
+  <!-- Runtime Bottom-Left: engine.js -->
+  <rect x="626" y="308" width="232" height="132" rx="11" fill="url(#cardGrad)" stroke="#8ef7e2" stroke-width="1.8"/>
+  <text x="644" y="335" fill="#8ef7e2" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13.5" font-weight="700">engine.js</text>
+  <text x="724" y="335" fill="#a9a28b" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11.5">(Three.js r170)</text>
+  <line x1="644" y1="347" x2="840" y2="347" stroke="#2d433a" stroke-width="1"/>
+  <text x="644" y="368" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• Custom GLSL AgX shader</text>
+  <text x="644" y="388" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• Catmull-Rom sky &amp; light rig</text>
+  <text x="644" y="408" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• InstancedMesh particles</text>
+
+  <!-- Runtime Bottom-Right: sfx.js -->
+  <rect x="916" y="308" width="232" height="132" rx="11" fill="url(#cardGrad)" stroke="#5cc9ff" stroke-width="1.8"/>
+  <text x="934" y="335" fill="#5cc9ff" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13.5" font-weight="700">sfx.js</text>
+  <text x="988" y="335" fill="#a9a28b" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11.5">(Web Audio API)</text>
+  <line x1="934" y1="347" x2="1130" y2="347" stroke="#2d433a" stroke-width="1"/>
+  <text x="934" y="368" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• Zero-asset D Lydian synth</text>
+  <text x="934" y="388" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• Glade convolution reverb</text>
+  <text x="934" y="408" fill="#d6cdb4" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12">• 3-layer reactive ambience</text>
+
+  <!-- ======================================================================= -->
+  <!-- CROSS-STAGE & RUNTIME ARROWS                                            -->
+  <!-- ======================================================================= -->
+
+  <!-- 1. PNG -> HTML (Fallback & Spirit Lens) -->
+  <path d="M 492 256 C 556 256, 554 162, 622 162" fill="none" stroke="#5cc9ff" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#arrowCyan)"/>
+  <rect x="506" y="188" width="100" height="36" rx="7" fill="#0d1b16" stroke="#2b576d" stroke-width="1"/>
+  <text x="556" y="203" text-anchor="middle" fill="#bfeaff" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="600">Spirit Lens &amp;</text>
+  <text x="556" y="217" text-anchor="middle" fill="#bfeaff" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="600"> Fallback IMG</text>
+
+  <!-- 2. DATA -> ENG (Meshes, Lights & Routes) -->
+  <path d="M 492 380 L 622 380" fill="none" stroke="#8ef7e2" stroke-width="2.2" marker-end="url(#arrowRune)"/>
+  <rect x="506" y="346" width="100" height="24" rx="6" fill="#0d1b16" stroke="#2f665c" stroke-width="1"/>
+  <text x="556" y="362" text-anchor="middle" fill="#d9fff6" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="600">Scene Payload</text>
+
+  <!-- 3. HTML <-> APP -->
+  <path d="M 862 162 L 912 162" fill="none" stroke="#9fc457" stroke-width="1.8" marker-start="url(#arrowMoss)" marker-end="url(#arrowMoss)"/>
+  <text x="887" y="152" text-anchor="middle" fill="#b9d684" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="600">DOM</text>
+
+  <!-- 4. APP <-> ENG (Diagonal across center gap) -->
+  <path d="M 936 230 C 895 268, 845 268, 804 304" fill="none" stroke="#ffc96a" stroke-width="2" marker-start="url(#arrowGold)" marker-end="url(#arrowGold)"/>
+  <rect x="802" y="254" width="136" height="24" rx="6" fill="#0d1b16" stroke="#664f29" stroke-width="1"/>
+  <text x="870" y="270" text-anchor="middle" fill="#ffe1a8" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="600">Camera, Sky &amp; Anchors</text>
+
+  <!-- 5. APP -> SFX (Vertical right column) -->
+  <path d="M 1052 226 L 1052 304" fill="none" stroke="#ffc96a" stroke-width="1.8" marker-end="url(#arrowGold)"/>
+  <rect x="1062" y="254" width="84" height="24" rx="6" fill="#0d1b16" stroke="#664f29" stroke-width="1"/>
+  <text x="1104" y="270" text-anchor="middle" fill="#ffe1a8" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="600">UI Foley</text>
+
+  <!-- 6. ENG -> SFX (Horizontal bottom row) -->
+  <path d="M 858 380 L 912 380" fill="none" stroke="#5cc9ff" stroke-width="1.8" marker-end="url(#arrowCyan)"/>
+  <text x="885" y="369" text-anchor="middle" fill="#9bdcff" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="600">World</text>
+  <text x="885" y="397" text-anchor="middle" fill="#9bdcff" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="600">Clock</text>
+</svg>

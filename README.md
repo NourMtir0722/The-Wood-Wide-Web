@@ -148,31 +148,9 @@ All 3D geometry, materials, crystal pockets, branching roots, and light rigs are
 
 ## ⚙️ Technical Architecture
 
-```mermaid
-flowchart LR
-  subgraph Offline["Blender Procedural Pipeline"]
-    BPY["build_wood_wide_web_blender.py<br/>(bpy + bmesh, seed=42)"]
-    BLEND["wood_wide_web_3d.blend / .glb"]
-    PNG["renders/*.png<br/>(6× EEVEE AgX Renders)"]
-    DATA["scene_3d_data.js<br/>(Quantized Int16/Int8 + Lights + Routes)"]
-    BPY --> BLEND
-    BPY --> PNG
-    BPY --> DATA
-  end
-
-  subgraph Runtime["Zero-Build Browser Runtime"]
-    HTML["index.html + styles.css<br/>(Carved Stone & Parchment UI)"]
-    APP["app.js<br/>(Quest State, Codex, Inset Layout)"]
-    ENG["engine.js<br/>(Three.js + Custom GLSL AgX + Particles)"]
-    SFX["sfx.js<br/>(Web Audio Synth + Glade Reverb)"]
-    DATA --> ENG
-    PNG -. "WebGL Fallback & Spirit Lens" .-> HTML
-    HTML --> APP
-    APP <--> ENG
-    APP --> SFX
-    ENG -- "nightMix, depth, attackProgress" --> SFX
-  end
-```
+<div align="center">
+  <img src="docs/media/architecture.svg" alt="The Wood Wide Web — Technical Architecture Diagram" width="100%">
+</div>
 
 ### Key Engineering Highlights
 
