@@ -1,0 +1,13 @@
+{
+  "name": "woodweb",
+  "compatibility_date": "2026-09-14",
+  "assets": {
+    "directory": "."
+  },
+  "routes": [
+    {
+      "pattern": "woodweb.noormtir.com",
+      "custom_domain": true
+    }
+  ]
+}

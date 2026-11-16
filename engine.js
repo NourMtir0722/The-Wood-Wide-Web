@@ -675,6 +675,8 @@
       time: 0,
       night: { goal: 0, raw: 0, mix: 0 },
       attack: { active: false, progress: 0, shield: 0 },
+      soilDisrupted: false,
+      soilHealth: 1,
       cam: { yaw: 0.11, pitch: 0.14, dist: 12, target: [0, -0.22, 0], fov: 35 },
       flight: null,
       drag: null,
@@ -919,19 +921,20 @@
 
     function applyEmissive(fx, pulse) {
       const m = state.night.mix;
+      const sh = state.soilHealth;
       const each = (role, fn) => (byRole[role] || []).forEach(fn);
       // Each glowing material wakes up slightly after the previous one
       each('mushroom_glow', (e, i) => {
         const wake = smoothstep(0.45 + (i % 5) * 0.05, 0.7 + (i % 5) * 0.05, m);
-        e.mat.emissiveIntensity = e.strength * (1 + 0.65 * wake);
+        e.mat.emissiveIntensity = e.strength * (1 + 0.65 * wake) * (0.25 + 0.75 * sh);
       });
-      each('mushroom_red', (e) => { e.mat.emissiveIntensity = e.strength * fx.bio; });
-      each('emissive_mycelium', (e) => { e.mat.emissiveIntensity = e.strength * fx.myc; });
+      each('mushroom_red', (e) => { e.mat.emissiveIntensity = e.strength * fx.bio * (0.35 + 0.65 * sh); });
+      each('emissive_mycelium', (e) => { e.mat.emissiveIntensity = e.strength * fx.myc * sh; });
       each('emissive_mineral', (e) => { e.mat.emissiveIntensity = e.strength * fx.myc; });
-      each('emissive_handshake', (e) => { e.mat.emissiveIntensity = e.strength * fx.myc * (state.step === 1 ? 1.2 + 0.5 * pulse : 1); });
+      each('emissive_handshake', (e) => { e.mat.emissiveIntensity = e.strength * fx.myc * (state.step === 1 ? 1.2 + 0.5 * pulse : 1) * sh; });
       each('ghost_plant', (e) => {
         const boost = state.step === 4 ? 1.6 + 0.8 * pulse : 1;
-        e.mat.emissiveIntensity = e.strength * Math.max(boost, fx.bio);
+        e.mat.emissiveIntensity = e.strength * Math.max(boost, fx.bio) * (0.3 + 0.7 * sh);
       });
       each('canopy_birch', (e) => {
         if (state.attack.shield > 0) {
@@ -951,7 +954,9 @@
     const _p = new THREE.Vector3();
     function updateParticles() {
       const counts = { sugar: 0, mineral: 0, siphon: 0, alarm: 0 };
+      const sh = state.soilHealth;
       for (const p of state.particles) {
+        if (sh < 0.16) continue;
         if (p.kind === 'sugar' && state.sunlight < 0.22 && p.t > 0.5) continue;
         if (p.kind === 'mineral' && state.sunlight < 0.18 && p.t > 0.55) continue;
         const pk = particleKinds[p.kind];
@@ -959,7 +964,7 @@
         if (i >= 24) continue;
         const pt = samplePolyline(p.pts, p.t);
         _q.setFromAxisAngle(_p.set(0, 1, 0), state.time * 1.5 + i);
-        _m4.compose(_p.set(pt[0], pt[1], pt[2]), _q, _s.setScalar(pk.scale));
+        _m4.compose(_p.set(pt[0], pt[1], pt[2]), _q, _s.setScalar(pk.scale * (0.25 + 0.75 * sh)));
         pk.mesh.setMatrixAt(i, _m4);
       }
       if (state.attack.active && routes.bugAlarm) {
@@ -1047,11 +1052,18 @@
         } else ins[k] = goal[k];
       }
 
-      // Soil x-ray fade
+      // Soil x-ray fade & living-soil vitality transition
       const soilGoal = state.xray ? 0.06 : 0.55;
       if (soilGlass && Math.abs(soilGlass.opacity - soilGoal) > 0.002) {
         soilGlass.opacity += (soilGoal - soilGlass.opacity) * Math.min(1, dt * 6);
         moving = true;
+      }
+      const healthGoal = state.soilDisrupted ? 0.05 : 1;
+      if (Math.abs(state.soilHealth - healthGoal) > 0.002) {
+        state.soilHealth += (healthGoal - state.soilHealth) * Math.min(1, dt * (reducedMotion ? 60 : 3.2));
+        moving = true;
+      } else {
+        state.soilHealth = healthGoal;
       }
 
       const animating = !state.paused || state.attract;
@@ -1059,8 +1071,8 @@
         state.time += dt;
         if (state.attract) state.attractT += dt;
         pulse = 0.5 + 0.5 * Math.sin(state.time * 4);
-        const sunMult = 0.25 + state.sunlight * 0.95;
-        for (const p of state.particles) p.t = (p.t + p.speed * (p.kind === 'siphon' ? 1 : sunMult) * dt) % 1;
+        const sunMult = (0.25 + state.sunlight * 0.95) * (0.12 + 0.88 * state.soilHealth);
+        for (const p of state.particles) p.t = (p.t + p.speed * (p.kind === 'siphon' ? state.soilHealth : sunMult) * dt) % 1;
         const atk = state.attack;
         if (atk.active) {
           atk.progress += dt * 0.3;
@@ -1143,9 +1155,15 @@
         state.step = i;
         state.attack.active = false;
         state.attack.shield = 0;
+        state.soilDisrupted = false;
         reseedParticles();
         state.dirty = true;
       },
+      setSoilDisrupted(disrupted) {
+        state.soilDisrupted = !!disrupted;
+        state.dirty = true;
+      },
+      isSoilDisrupted: () => state.soilDisrupted,
       triggerAttack() {
         state.attack.active = true;
         state.attack.progress = 0;

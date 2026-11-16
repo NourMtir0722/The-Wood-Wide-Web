@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#06110d">
-  <title>The Wood Wide Web — How Trees &amp; Fungi Talk Underground</title>
+  <title>The Wood Wide Web · How Trees &amp; Fungi Talk Underground</title>
   <meta name="description" content="An interactive 3D forest quest: discover how trees and fungi trade sugar, minerals and warnings through the underground wood wide web.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='23' fill='%2306110d'/%3E%3Cpath d='M24 6 L31 17 H27.5 L33 25 H15 L20.5 17 H17 Z' fill='%238ef7e2'/%3E%3Cpath d='M6 25.5 H42' stroke='%238ef7e2' stroke-width='2'/%3E%3Cpath d='M24 25.5 V31 M24 31 C20 33 18 36 13 38 M24 31 C28 33 30 36 35 38 M24 33 V41' fill='none' stroke='%23ffc96a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
 
@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,700;1,400;1,500&amp;family=Marcellus+SC&amp;family=Uncial+Antiqua&amp;display=swap">
   <!-- Bump ?v= after editing a file: python's http.server sends no cache headers,
        so a normal reload keeps running the browser's old copy -->
-  <link rel="stylesheet" href="styles.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=4">
 
   <!-- three.js for the 3D engine (engine.js imports it lazily through this map) -->
   <script type="importmap">
@@ -26,18 +26,18 @@
     }
   </script>
   <script defer src="scene_3d_data.js"></script>
-  <script defer src="engine.js?v=2"></script>
-  <script defer src="sfx.js?v=2"></script>
-  <script defer src="app.js?v=2"></script>
+  <script defer src="engine.js?v=4"></script>
+  <script defer src="sfx.js?v=4"></script>
+  <script defer src="app.js?v=4"></script>
 </head>
 <body>
   <a href="#journal" class="skip-link">Skip to the quest journal</a>
 
   <main>
     <!-- =====================================================================
-         GAME SCREEN — full-bleed 3D world with title menu + in-game HUD
+         GAME SCREEN: full-bleed 3D world with title menu + in-game HUD
          ===================================================================== -->
-    <section class="game" id="game" data-screen="title" aria-label="The Wood Wide Web — interactive 3D forest">
+    <section class="game" id="game" data-screen="title" aria-label="The Wood Wide Web: interactive 3D forest">
       <canvas
         id="world"
         role="img"
@@ -52,9 +52,9 @@
       <!-- Codex markers projected onto the 3D scene -->
       <div class="pins" id="pins">
         <button type="button" class="pin" data-pin="fir"><span class="pin-mark" aria-hidden="true"></span><span class="pin-label">Elder Fir</span></button>
-        <button type="button" class="pin" data-pin="sapling"><span class="pin-mark" aria-hidden="true"></span><span class="pin-label">Baby Sapling</span></button>
+        <button type="button" class="pin" data-pin="sapling"><span class="pin-mark" aria-hidden="true"></span><span class="pin-label">Shaded Sapling</span></button>
         <button type="button" class="pin" data-pin="birch"><span class="pin-mark" aria-hidden="true"></span><span class="pin-label">Paper Birch</span></button>
-        <button type="button" class="pin" data-pin="mycelium"><span class="pin-mark" aria-hidden="true"></span><span class="pin-label">Fungal Web</span></button>
+        <button type="button" class="pin" data-pin="mycelium"><span class="pin-mark" aria-hidden="true"></span><span class="pin-label">Mycelium Web</span></button>
         <button type="button" class="pin" data-pin="ghost"><span class="pin-mark" aria-hidden="true"></span><span class="pin-label">Ghost Pipe</span></button>
       </div>
 
@@ -66,24 +66,45 @@
             <span class="title-logo-line">The Wood</span>
             <span class="title-logo-line title-logo-line--big">Wide Web</span>
           </h1>
-          <p class="title-sub">How trees &amp; fungi talk beneath your feet</p>
+          <p class="title-sub" id="title-sub">How trees, fungi, and living soil sustain forests and our food beneath our feet</p>
         </div>
 
-        <nav class="title-menu" aria-label="Main menu">
-          <ul class="menu-list" id="menu-main" role="list">
-            <li><button type="button" class="menu-item" data-action="begin">Begin the Quest</button></li>
-            <li><button type="button" class="menu-item" data-action="chapters">Chapter Select</button></li>
-            <li><button type="button" class="menu-item" data-action="lore">Read the Lore</button></li>
-          </ul>
-          <ul class="menu-list menu-list--chapters" id="menu-chapters" role="list" hidden>
-            <li><button type="button" class="menu-item" data-chapter="0"><span class="menu-num">I</span>Leaves &amp; Rocks</button></li>
-            <li><button type="button" class="menu-item" data-chapter="1"><span class="menu-num">II</span>The Underground Pact</button></li>
-            <li><button type="button" class="menu-item" data-chapter="2"><span class="menu-num">III</span>Kinship Network</button></li>
-            <li><button type="button" class="menu-item" data-chapter="3"><span class="menu-num">IV</span>Whispering Wires</button></li>
-            <li><button type="button" class="menu-item" data-chapter="4"><span class="menu-num">V</span>The Ghost Bandit</button></li>
-            <li><button type="button" class="menu-item menu-item--back" data-action="back">Back</button></li>
-          </ul>
-        </nav>
+        <div class="title-menu-wrap">
+          <fieldset class="age-picker age-picker--title">
+            <legend class="age-picker-label">Explain for</legend>
+            <div class="age-pills">
+              <label class="age-pill">
+                <input type="radio" name="age-title" value="kids" class="visually-hidden">
+                <span>Under 12</span>
+              </label>
+              <label class="age-pill">
+                <input type="radio" name="age-title" value="teens" class="visually-hidden">
+                <span>Teens</span>
+              </label>
+              <label class="age-pill">
+                <input type="radio" name="age-title" value="adults" class="visually-hidden" checked>
+                <span>Adults</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <nav class="title-menu" aria-label="Main menu">
+            <ul class="menu-list" id="menu-main" role="list">
+              <li><button type="button" class="menu-item" data-action="begin">Begin the Quest</button></li>
+              <li><button type="button" class="menu-item" data-action="chapters">Chapter Select</button></li>
+              <li><button type="button" class="menu-item" data-action="lore">Read the Lore</button></li>
+            </ul>
+            <ul class="menu-list menu-list--chapters" id="menu-chapters" role="list" hidden>
+              <li><button type="button" class="menu-item" data-chapter="0"><span class="menu-num">I</span><span data-chapter-menu="0">Leaves &amp; Rocks</span></button></li>
+              <li><button type="button" class="menu-item" data-chapter="1"><span class="menu-num">II</span><span data-chapter-menu="1">The Root Handshake</span></button></li>
+              <li><button type="button" class="menu-item" data-chapter="2"><span class="menu-num">III</span><span data-chapter-menu="2">Neighborhood Bridges</span></button></li>
+              <li><button type="button" class="menu-item" data-chapter="3"><span class="menu-num">IV</span><span data-chapter-menu="3">Bug-Attack Warnings</span></button></li>
+              <li><button type="button" class="menu-item" data-chapter="4"><span class="menu-num">V</span><span data-chapter-menu="4">The Ghost Plant</span></button></li>
+              <li><button type="button" class="menu-item" data-chapter="5"><span class="menu-num">VI</span><span data-chapter-menu="5">Living Soil &amp; Us</span></button></li>
+              <li><button type="button" class="menu-item menu-item--back" data-action="back">Back</button></li>
+            </ul>
+          </nav>
+        </div>
 
         <button type="button" class="hud-icon title-sfx" id="title-sfx-toggle" aria-pressed="true" aria-label="Forest sound">
           <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-sound-on"><path d="M4.5 9.5H8l4.5-4v13l-4.5-4H4.5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.2 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -107,15 +128,15 @@
 
         <div class="lore-meter" id="lore-meter">
           <ol class="rune-sockets" id="rune-sockets" aria-hidden="true">
-            <li data-lore="step-0"></li><li data-lore="step-1"></li><li data-lore="step-2"></li><li data-lore="step-3"></li><li data-lore="step-4"></li>
+            <li data-lore="step-0"></li><li data-lore="step-1"></li><li data-lore="step-2"></li><li data-lore="step-3"></li><li data-lore="step-4"></li><li data-lore="step-5"></li>
             <li data-lore="pin-fir" class="is-codex"></li><li data-lore="pin-sapling" class="is-codex"></li><li data-lore="pin-birch" class="is-codex"></li><li data-lore="pin-mycelium" class="is-codex"></li><li data-lore="pin-ghost" class="is-codex"></li>
           </ol>
           <p class="lore-text" id="lore-label">
-            <span class="lore-count"><span id="lore-count">0</span><span class="lore-of">/10</span></span>
+            <span class="lore-count"><span id="lore-count">0</span><span class="lore-of">/11</span></span>
             <span class="lore-word">Lore</span>
             <span class="lore-rank" id="lore-rank">Sprout Scout</span>
           </p>
-          <progress class="visually-hidden" id="lore-progress" max="10" value="0" aria-labelledby="lore-label"></progress>
+          <progress class="visually-hidden" id="lore-progress" max="11" value="0" aria-labelledby="lore-label"></progress>
         </div>
 
         <div class="hud-actions">
@@ -152,100 +173,211 @@
         </div>
 
         <div class="journal-body" id="journal-body">
+          <fieldset class="age-picker age-picker--journal">
+            <legend class="visually-hidden">Explain for audience age</legend>
+            <div class="age-pills">
+              <label class="age-pill">
+                <input type="radio" name="age-journal" value="kids" class="visually-hidden">
+                <span>Under 12</span>
+              </label>
+              <label class="age-pill">
+                <input type="radio" name="age-journal" value="teens" class="visually-hidden">
+                <span>Teens</span>
+              </label>
+              <label class="age-pill">
+                <input type="radio" name="age-journal" value="adults" class="visually-hidden" checked>
+                <span>Adults</span>
+              </label>
+            </div>
+          </fieldset>
+
           <div class="chapter-path" role="tablist" aria-label="Chapters">
-            <button type="button" role="tab" id="tab-1" aria-controls="panel-1" aria-selected="true" data-step="0" title="Vitamins"><span class="stone-num">I</span><span class="visually-hidden">Chapter I: Vitamins</span></button>
-            <button type="button" role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1" data-step="1" title="Swap"><span class="stone-num">II</span><span class="visually-hidden">Chapter II: Swap</span></button>
-            <button type="button" role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" tabindex="-1" data-step="2" title="Rescue"><span class="stone-num">III</span><span class="visually-hidden">Chapter III: Rescue</span></button>
-            <button type="button" role="tab" id="tab-4" aria-controls="panel-4" aria-selected="false" tabindex="-1" data-step="3" title="Alarm"><span class="stone-num">IV</span><span class="visually-hidden">Chapter IV: Alarm</span></button>
-            <button type="button" role="tab" id="tab-5" aria-controls="panel-5" aria-selected="false" tabindex="-1" data-step="4" title="Heist"><span class="stone-num">V</span><span class="visually-hidden">Chapter V: Heist</span></button>
+            <button type="button" role="tab" id="tab-1" aria-controls="panel-1" aria-selected="true" data-step="0" title="Minerals"><span class="stone-num">I</span><span class="visually-hidden">Chapter I: Leaves &amp; Rocks</span></button>
+            <button type="button" role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1" data-step="1" title="Handshake"><span class="stone-num">II</span><span class="visually-hidden">Chapter II: Root Handshake</span></button>
+            <button type="button" role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" tabindex="-1" data-step="2" title="Sharing"><span class="stone-num">III</span><span class="visually-hidden">Chapter III: Neighborhood Bridges</span></button>
+            <button type="button" role="tab" id="tab-4" aria-controls="panel-4" aria-selected="false" tabindex="-1" data-step="3" title="Warnings"><span class="stone-num">IV</span><span class="visually-hidden">Chapter IV: Bug-Attack Warnings</span></button>
+            <button type="button" role="tab" id="tab-5" aria-controls="panel-5" aria-selected="false" tabindex="-1" data-step="4" title="Ghost Plant"><span class="stone-num">V</span><span class="visually-hidden">Chapter V: The Ghost Plant</span></button>
+            <button type="button" role="tab" id="tab-6" aria-controls="panel-6" aria-selected="false" tabindex="-1" data-step="5" title="Living Soil"><span class="stone-num">VI</span><span class="visually-hidden">Chapter VI: Living Soil &amp; Us</span></button>
           </div>
 
           <div class="panels">
             <!-- Chapter I -->
-            <section role="tabpanel" id="panel-1" aria-labelledby="tab-1" tabindex="0" class="chapter">
-              <p class="chapter-kicker">Chapter I · The Sanctuary Mystery</p>
-              <h2 class="chapter-title">Leaves brew sugar, while rocks lock away vitamins</h2>
-              <p class="chapter-text">Up in the sunlit canopy, leaves easily brew sweet <strong>sugar</strong>. Deep underground, vital <strong>water and minerals</strong> hide inside microscopic rock crevices — far too narrow for woody tree roots to reach alone.</p>
-              <figure class="pitch">
-                <figcaption><span>Campfire line</span><button type="button" class="pitch-copy" data-copy-pitch="Trees make food from sunlight, and fungi can squeeze into tiny rock cracks—so they team up.">Copy</button></figcaption>
-                <blockquote>“Trees make food from sunlight, and fungi can squeeze into tiny rock cracks — so they team up.”</blockquote>
-              </figure>
+            <section role="tabpanel" id="panel-1" aria-labelledby="tab-1" tabindex="0" class="chapter" data-chapter-panel="0">
+              <p class="chapter-kicker">Chapter I · The Underground Economy</p>
+              <h2 class="chapter-title">Leaves capture sunlit sugar, while rocks lock away vital minerals</h2>
+              <p class="chapter-text">In the sunlit canopy, leaves use <span class="sci-term">photosynthesis</span> to turn sunlight and air into <strong>sugar</strong>. Deep below, essential <strong>water, phosphorus, and nitrogen</strong> sit locked inside microscopic rock pores that only hair-fine fungal <span class="sci-term">hyphae</span> can enter.</p>
+              <dl class="sci-dict">
+                <div>
+                  <dt><dfn>pho·to·syn·the·sis</dfn> <span class="dict-pos">noun</span></dt>
+                  <dd>How green leaves use sunlight, water, and carbon from the air to make energy-rich sugar.</dd>
+                </div>
+                <div>
+                  <dt><dfn>hy·phae</dfn> <span class="dict-pos">plural noun · “HIGH-fee”</span></dt>
+                  <dd>Microscopic fungal threads, 50 times thinner than a human hair, that squeeze into tiny rock cracks.</dd>
+                </div>
+              </dl>
               <div class="quest">
                 <p class="quest-label">Field mission</p>
-                <button type="button" class="quest-action" data-goto-cam="underground" data-quest="q1"><span class="quest-check" aria-hidden="true"></span><span>Dive the camera into the root wires</span></button>
+                <button type="button" class="quest-action" data-goto-cam="underground" data-quest="q1"><span class="quest-check" aria-hidden="true"></span><span class="quest-action-text">Inspect the underground root network</span></button>
               </div>
+              <details class="chapter-sources">
+                <summary><span aria-hidden="true">✦</span> Peer-reviewed research</summary>
+                <ul class="sources-list" role="list">
+                  <li><a href="https://doi.org/10.1038/39493" target="_blank" rel="noopener noreferrer">Jongmans et al., <em>Nature</em> (1997): “Rock-eating fungi” <span aria-hidden="true">↗</span></a></li>
+                </ul>
+              </details>
             </section>
 
             <!-- Chapter II -->
-            <section role="tabpanel" id="panel-2" aria-labelledby="tab-2" hidden class="chapter">
-              <p class="chapter-kicker">Chapter II · The Underground Pact</p>
-              <h2 class="chapter-title">Fungi trade rock minerals for sweet tree sugar</h2>
-              <p class="chapter-text">Ultra-fine glowing <strong>fungal threads</strong> mine those cyan rock crystals and coil around root tips like a living glove. Right at that handshake, fungi hand over water and fertilizer — and get paid in golden sugar.</p>
-              <figure class="pitch">
-                <figcaption><span>Campfire line</span><button type="button" class="pitch-copy" data-copy-pitch="Fungi act like underground personal shoppers—delivering water and fertilizer to roots and getting paid in sugar.">Copy</button></figcaption>
-                <blockquote>“Fungi act like underground personal shoppers — delivering water and fertilizer to roots and getting paid in sugar.”</blockquote>
-              </figure>
+            <section role="tabpanel" id="panel-2" aria-labelledby="tab-2" hidden class="chapter" data-chapter-panel="1">
+              <p class="chapter-kicker">Chapter II · The Cellular Handshake</p>
+              <h2 class="chapter-title">Fungi trade rock minerals for tree sugar right at the root wall</h2>
+              <p class="chapter-text">Fungal threads unlock rock minerals and form a <span class="sci-term">mycorrhiza</span> with roots. Depending on the fungus, <span class="sci-term">ectomycorrhizal</span> threads wrap around the outer walls of root cells (common in forest trees), while <span class="sci-term">arbuscular</span> threads press gently inside root cell walls (common in farm crops), trading water and <strong>minerals</strong> for golden sugar.</p>
+              <dl class="sci-dict">
+                <div>
+                  <dt><dfn>my·cor·rhi·za</dfn> <span class="dict-pos">noun · “my-koh-RYE-zuh”</span></dt>
+                  <dd>Literally “fungus-root”; the trading partnership where fungal threads join plant roots.</dd>
+                </div>
+                <div>
+                  <dt><dfn>ec·to·my·cor·rhi·zal</dfn> <span class="dict-pos">adjective</span></dt>
+                  <dd>Fungal threads that touch and wrap around the outer walls of root cells without entering them.</dd>
+                </div>
+                <div>
+                  <dt><dfn>ar·bus·cu·lar</dfn> <span class="dict-pos">adjective</span></dt>
+                  <dd>Fungal threads that push gently inside root cell walls to form tiny tree-shaped trading branches.</dd>
+                </div>
+              </dl>
               <div class="quest">
                 <p class="quest-label">Field mission</p>
-                <button type="button" class="quest-action" data-open-closeup data-quest="q2"><span class="quest-check" aria-hidden="true"></span><span>Inspect the root handshake up close</span></button>
+                <button type="button" class="quest-action" data-open-closeup data-quest="q2"><span class="quest-check" aria-hidden="true"></span><span class="quest-action-text">Examine the root-cell handshake up close</span></button>
               </div>
+              <details class="chapter-sources">
+                <summary><span aria-hidden="true">✦</span> Peer-reviewed research</summary>
+                <ul class="sources-list" role="list">
+                  <li><a href="https://doi.org/10.1126/science.1208473" target="_blank" rel="noopener noreferrer">Kiers et al., <em>Science</em> (2011): Reciprocal sugar-for-mineral rewards <span aria-hidden="true">↗</span></a></li>
+                  <li><a href="https://doi.org/10.1038/s41579-020-0402-3" target="_blank" rel="noopener noreferrer">Genre et al., <em>Nat. Rev. Microbiol.</em> (2020): Outer vs. inner root-cell fungi <span aria-hidden="true">↗</span></a></li>
+                </ul>
+              </details>
             </section>
 
             <!-- Chapter III -->
-            <section role="tabpanel" id="panel-3" aria-labelledby="tab-3" hidden class="chapter">
-              <p class="chapter-kicker">Chapter III · Kinship Network</p>
-              <h2 class="chapter-title">Sunlit elder trees help feed shaded saplings</h2>
-              <p class="chapter-text">One fungal web links the whole glade at once. Tall trees bathing in bright sunlight pour extra sugar into the shared threads, where it flows into tiny <strong>baby saplings</strong> struggling in deep forest shade.</p>
-              <figure class="pitch">
-                <figcaption><span>Campfire line</span><button type="button" class="pitch-copy" data-copy-pitch="Tall sunlit trees share extra sugar through the fungal web to keep shaded baby trees alive.">Copy</button></figcaption>
-                <blockquote>“Tall sunlit trees share extra sugar through the fungal web to keep shaded baby trees alive.”</blockquote>
-              </figure>
+            <section role="tabpanel" id="panel-3" aria-labelledby="tab-3" hidden class="chapter" data-chapter-panel="2">
+              <p class="chapter-kicker">Chapter III · Neighborhood Bridges</p>
+              <h2 class="chapter-title">Shared fungal bridges move carbon between sunlit and shaded trees</h2>
+              <p class="chapter-text">Field studies worldwide using <span class="sci-term">carbon isotopes</span> have tracked sugar moving underground through shared <span class="sci-term">mycelium</span> between neighboring trees, even across species like fir and birch. Extra sugar from sunlit crowns flows along fungal bridges toward <strong>shaded seedlings</strong> on the dim forest floor.</p>
+              <dl class="sci-dict">
+                <div>
+                  <dt><dfn>my·ce·li·um</dfn> <span class="dict-pos">noun · “my-SEE-lee-um”</span></dt>
+                  <dd>The main underground body of a fungus woven from miles of threads; mushrooms are only its fruit.</dd>
+                </div>
+                <div>
+                  <dt><dfn>car·bon i·so·topes</dfn> <span class="dict-pos">plural noun</span></dt>
+                  <dd>Harmless, naturally traceable carbon atoms scientists use like tiny tags to follow where tree sugar travels.</dd>
+                </div>
+              </dl>
               <div class="quest">
-                <p class="quest-label">Field mission · Test the canopy sunlight</p>
+                <p class="quest-label" id="sun-quest-label">Field mission · Adjust canopy sunlight</p>
                 <div class="sun-control">
                   <div class="sun-control-head">
-                    <label for="sunlight-slider">Sunbeam power</label>
+                    <label for="sunlight-slider" id="sun-slider-label">Canopy sunlight</label>
                     <output id="sunlight-readout" for="sunlight-slider">85%</output>
                   </div>
                   <input type="range" id="sunlight-slider" class="rune-slider" min="10" max="100" step="1" value="85" aria-valuetext="85% canopy sunlight">
                 </div>
               </div>
+              <details class="chapter-sources">
+                <summary><span aria-hidden="true">✦</span> Peer-reviewed research</summary>
+                <ul class="sources-list" role="list">
+                  <li><a href="https://doi.org/10.1038/41557" target="_blank" rel="noopener noreferrer">Simard et al., <em>Nature</em> (1997): Field carbon transfer between fir &amp; birch <span aria-hidden="true">↗</span></a></li>
+                  <li><a href="https://doi.org/10.1126/science.aad6188" target="_blank" rel="noopener noreferrer">Klein et al., <em>Science</em> (2016): Belowground carbon trade among tall trees <span aria-hidden="true">↗</span></a></li>
+                </ul>
+              </details>
             </section>
 
             <!-- Chapter IV -->
-            <section role="tabpanel" id="panel-4" aria-labelledby="tab-4" hidden class="chapter">
-              <p class="chapter-kicker">Chapter IV · Whispering Wires</p>
-              <h2 class="chapter-title">Bitten trees broadcast underground bug alarms</h2>
-              <p class="chapter-text">When caterpillars chew on the Elder Fir, distress molecules surge down its roots and race across the fungal highway. Neighboring <strong>Paper Birches</strong> sense the warning and brew bitter bug-repellent early.</p>
-              <figure class="pitch">
-                <figcaption><span>Campfire line</span><button type="button" class="pitch-copy" data-copy-pitch="When bugs bite one tree, a chemical alarm ripples through fungal wires so neighbor trees brew bug spray early.">Copy</button></figcaption>
-                <blockquote>“When bugs bite one tree, a chemical alarm ripples through fungal wires so neighbor trees brew bug spray early.”</blockquote>
-              </figure>
+            <section role="tabpanel" id="panel-4" aria-labelledby="tab-4" hidden class="chapter" data-chapter-panel="3">
+              <p class="chapter-kicker">Chapter IV · Early Defense Signals</p>
+              <h2 class="chapter-title">Pest-damaged plants pass chemical warnings across fungal threads</h2>
+              <p class="chapter-text">When leaf-eating insects chew on the Elder Fir, chemical stress cues move into its roots and cross shared fungal bridges within 24 to 48 hours. Connected neighbors like the <strong>Paper Birch</strong> detect the alert and brew protective <span class="sci-term">tannins</span> in their leaves before pests spread.</p>
+              <dl class="sci-dict">
+                <div>
+                  <dt><dfn>tan·nins</dfn> <span class="dict-pos">plural noun · “TAN-inz”</span></dt>
+                  <dd>Bitter natural plant compounds brewed inside leaves that deter insects and make foliage hard to digest.</dd>
+                </div>
+              </dl>
               <div class="quest">
                 <p class="quest-label">Field mission</p>
-                <button type="button" class="quest-action quest-action--danger" id="trigger-attack-btn" data-quest="q4"><span class="quest-check" aria-hidden="true"></span><span>Launch a caterpillar attack</span></button>
+                <button type="button" class="quest-action quest-action--danger" id="trigger-attack-btn" data-quest="q4"><span class="quest-check" aria-hidden="true"></span><span class="quest-action-text">Trigger insect attack &amp; watch the signal</span></button>
               </div>
+              <details class="chapter-sources">
+                <summary><span aria-hidden="true">✦</span> Peer-reviewed research</summary>
+                <ul class="sources-list" role="list">
+                  <li><a href="https://doi.org/10.1038/srep08495" target="_blank" rel="noopener noreferrer">Song, Simard et al., <em>Sci. Reports</em> (2015): Defoliation defense signaling in trees <span aria-hidden="true">↗</span></a></li>
+                  <li><a href="https://doi.org/10.1111/ele.12115" target="_blank" rel="noopener noreferrer">Babíková et al., <em>Ecology Letters</em> (2013): Fungal networks carry pest warnings <span aria-hidden="true">↗</span></a></li>
+                </ul>
+              </details>
             </section>
 
             <!-- Chapter V -->
-            <section role="tabpanel" id="panel-5" aria-labelledby="tab-5" hidden class="chapter">
-              <p class="chapter-kicker">Chapter V · The Shadow Twist</p>
-              <h2 class="chapter-title">Ghostly white plants hack the web for free sugar</h2>
-              <p class="chapter-text">Spot the pale <strong>Ghost Pipe</strong> on the right? It has zero green chlorophyll and makes zero food from sunlight. Instead, it taps straight into the fungal wires to siphon tree sugar without paying anything back.</p>
-              <figure class="pitch">
-                <figcaption><span>Campfire line</span><button type="button" class="pitch-copy" data-copy-pitch="Even forests have hackers—waxy white ghost plants plug into the fungal web to siphon free tree sugar.">Copy</button></figcaption>
-                <blockquote>“Even forests have hackers — waxy white ghost plants plug into the fungal web to siphon free tree sugar.”</blockquote>
-              </figure>
+            <section role="tabpanel" id="panel-5" aria-labelledby="tab-5" hidden class="chapter" data-chapter-panel="4">
+              <p class="chapter-kicker">Chapter V · Parasites on the Network</p>
+              <h2 class="chapter-title">Some pale forest plants live as parasites on the fungal web</h2>
+              <p class="chapter-text">Notice the waxy white <strong>Ghost Pipe</strong> on the right. Completely lacking green <span class="sci-term">chlorophyll</span>, it makes zero food from sunlight. Instead, it evolved into a <span class="sci-term">mycoheterotroph</span>, attaching to living fungal threads like a parasite to draw tree sugar without giving anything back.</p>
+              <dl class="sci-dict">
+                <div>
+                  <dt><dfn>chlo·ro·phyll</dfn> <span class="dict-pos">noun · “KLOR-uh-fil”</span></dt>
+                  <dd>The green pigment inside plant leaves that captures sunlight to make food.</dd>
+                </div>
+                <div>
+                  <dt><dfn>my·co·het·er·o·troph</dfn> <span class="dict-pos">noun</span></dt>
+                  <dd>A non-green parasitic plant that gets its carbon sugar from living fungi rather than sunlight.</dd>
+                </div>
+              </dl>
               <div class="quest">
                 <p class="quest-label">Field mission</p>
-                <button type="button" class="quest-action" data-goto-cam="ghost" data-quest="q5"><span class="quest-check" aria-hidden="true"></span><span>Track down the ghost pipe bandit</span></button>
+                <button type="button" class="quest-action" data-goto-cam="ghost" data-quest="q5"><span class="quest-check" aria-hidden="true"></span><span class="quest-action-text">Inspect the parasitic Ghost Pipe</span></button>
               </div>
+              <details class="chapter-sources">
+                <summary><span aria-hidden="true">✦</span> Peer-reviewed research</summary>
+                <ul class="sources-list" role="list">
+                  <li><a href="https://doi.org/10.1111/j.1469-8137.2005.01429.x" target="_blank" rel="noopener noreferrer">Bidartondo, <em>New Phytologist</em> (2005): Evolution of plants parasitizing fungi <span aria-hidden="true">↗</span></a></li>
+                </ul>
+              </details>
+            </section>
+
+            <!-- Chapter VI -->
+            <section role="tabpanel" id="panel-6" aria-labelledby="tab-6" hidden class="chapter" data-chapter-panel="5">
+              <p class="chapter-kicker">Chapter VI · Living Soil &amp; Our Food</p>
+              <h2 class="chapter-title">Chemicals break a 400-million-year pact, while living soil restores it</h2>
+              <p class="chapter-text">The earliest land plants had <strong>no roots at all</strong>; they lived in total <span class="sci-term">symbiosis</span> with fungi, and roots evolved to expand that bond. Chemical pesticides kill delicate fungi, while synthetic fertilizers give plants free surface minerals so they stop paying sugar and sever the connection. Stripped of fungi’s deep mineral reach, soils lose fertility and food prices climb. <span class="sci-term">Regenerative</span> care restores living soil.</p>
+              <dl class="sci-dict">
+                <div>
+                  <dt><dfn>sym·bi·o·sis</dfn> <span class="dict-pos">noun · “sim-bee-OH-sis”</span></dt>
+                  <dd>A close, long-term biological partnership in which two different species help each other survive.</dd>
+                </div>
+                <div>
+                  <dt><dfn>re·gen·er·a·tive</dfn> <span class="dict-pos">adjective</span></dt>
+                  <dd>Farming with compost, cover crops, and minimal digging instead of harsh chemicals so soil life rebuilds fertility naturally.</dd>
+                </div>
+              </dl>
+              <div class="quest">
+                <p class="quest-label">Field mission</p>
+                <button type="button" class="quest-action quest-action--danger" id="toggle-soil-shock-btn" data-quest="q6" aria-pressed="false"><span class="quest-check" aria-hidden="true"></span><span class="quest-action-text">Test chemical fertilizer shock on the web</span></button>
+              </div>
+              <details class="chapter-sources">
+                <summary><span aria-hidden="true">✦</span> Peer-reviewed research</summary>
+                <ul class="sources-list" role="list">
+                  <li><a href="https://doi.org/10.1073/pnas.91.25.11841" target="_blank" rel="noopener noreferrer">Remy et al., <em>PNAS</em> (1994): 400-million-year-old rootless plant and fungus fossils <span aria-hidden="true">↗</span></a></li>
+                  <li><a href="https://doi.org/10.1038/s41559-022-01799-8" target="_blank" rel="noopener noreferrer">Edlinger et al., <em>Nat. Ecol. Evol.</em> (2022): Chemical inputs vs. fungal mineral trade <span aria-hidden="true">↗</span></a></li>
+                  <li><a href="https://doi.org/10.1038/s41396-019-0383-2" target="_blank" rel="noopener noreferrer">Banerjee et al., <em>ISME J.</em> (2019): Organic vs. intensive farming fungal webs <span aria-hidden="true">↗</span></a></li>
+                </ul>
+              </details>
             </section>
           </div>
 
           <nav class="journal-nav" aria-label="Chapter navigation">
             <button type="button" class="carved-btn" id="prev-step-btn"><span aria-hidden="true">‹</span> Prev</button>
-            <span class="step-counter" id="step-counter">Chapter I of V</span>
+            <span class="step-counter" id="step-counter">Chapter I of VI</span>
             <button type="button" class="carved-btn carved-btn--glow" id="next-step-btn">Next <span aria-hidden="true">›</span></button>
           </nav>
         </div>
@@ -282,25 +414,47 @@
     <section class="lore" id="lore" aria-labelledby="lore-heading">
       <div class="section-head">
         <p class="section-kicker"><span aria-hidden="true">✦</span> Lore tablets <span aria-hidden="true">✦</span></p>
-        <h2 id="lore-heading" class="section-title">Explain the whole secret in 30 seconds</h2>
-        <p class="section-sub">Three truths anyone can picture right away.</p>
+        <h2 id="lore-heading" class="section-title">Explain the whole secret in a minute</h2>
+        <p class="section-sub" id="lore-sub">Four core truths connecting wild forests to the soil that grows our food.</p>
+        <fieldset class="age-picker age-picker--lore">
+          <legend class="age-picker-label">Explain for</legend>
+          <div class="age-pills">
+            <label class="age-pill">
+              <input type="radio" name="age-lore" value="kids" class="visually-hidden">
+              <span>Under 12</span>
+            </label>
+            <label class="age-pill">
+              <input type="radio" name="age-lore" value="teens" class="visually-hidden">
+              <span>Teens</span>
+            </label>
+            <label class="age-pill">
+              <input type="radio" name="age-lore" value="adults" class="visually-hidden" checked>
+              <span>Adults</span>
+            </label>
+          </div>
+        </fieldset>
       </div>
 
       <ol class="tablet-row" role="list">
-        <li class="lore-tablet tablet">
+        <li class="lore-tablet tablet" data-lore-tablet="0">
           <span class="lore-num" aria-hidden="true">I</span>
-          <h3>Mushrooms are only the fruit</h3>
-          <p>Nearly the entire fungus lives out of sight underground as miles of glowing threads weaving tree roots together.</p>
+          <h3>Mushrooms aren’t just food, they’re only the fruit</h3>
+          <p>Nearly the entire fungus lives underground as miles of threads weaving tree roots together, while mushrooms are only its seasonal fruit.</p>
         </li>
-        <li class="lore-tablet tablet">
+        <li class="lore-tablet tablet" data-lore-tablet="1">
           <span class="lore-num" aria-hidden="true">II</span>
           <h3>Sugar trades for rock minerals</h3>
-          <p>Trees pay fungi with sunlit carbon sugar; fungi pay trees back with deep water, nitrogen and phosphorus.</p>
+          <p>Trees pay fungi with sunlit carbon sugar; fungi wrap around or reach inside root cells to pay back deep water, nitrogen, and phosphorus.</p>
         </li>
-        <li class="lore-tablet tablet">
+        <li class="lore-tablet tablet" data-lore-tablet="2">
           <span class="lore-num" aria-hidden="true">III</span>
           <h3>One web links the neighborhood</h3>
-          <p>Shared fungal bridges let extra sugar reach shaded seedlings and carry chemical bug-attack warnings between trees.</p>
+          <p>Shared fungal bridges let extra sugar reach shaded seedlings and carry chemical bug-attack warnings between neighboring trees.</p>
+        </li>
+        <li class="lore-tablet tablet" data-lore-tablet="3">
+          <span class="lore-num" aria-hidden="true">IV</span>
+          <h3>Living soil feeds our future</h3>
+          <p>Chemical fertilizers and pesticides rupture this 400-million-year partnership and exhaust farmland; regenerative soil care restores it.</p>
         </li>
       </ol>
     </section>
@@ -308,23 +462,80 @@
     <section class="riddles" aria-labelledby="riddles-heading">
       <div class="section-head">
         <p class="section-kicker"><span aria-hidden="true">✦</span> Campfire riddles <span aria-hidden="true">✦</span></p>
-        <h2 id="riddles-heading" class="section-title">Three questions listeners always ask</h2>
-        <p class="section-sub">Open a scroll to reveal the real forest science.</p>
+        <h2 id="riddles-heading" class="section-title">Four questions listeners always ask</h2>
+        <p class="section-sub" id="riddles-sub">Open a scroll to reveal the real forest &amp; soil science.</p>
       </div>
 
       <div class="riddle-list">
-        <details class="riddle">
-          <summary><span class="riddle-mark" aria-hidden="true">?</span><span>Do big trees “think” like brains when feeding baby saplings?</span></summary>
-          <div class="riddle-answer"><p>No brains required! Sugar naturally flows from full, sunlit roots toward hungry, shaded roots — and the fungus keeps young trees alive so it preserves future sugar-paying partners.</p></div>
+        <details class="riddle" data-riddle="0">
+          <summary><span class="riddle-mark" aria-hidden="true">?</span><span class="riddle-q">Do big trees “think” like brains when feeding shaded seedlings?</span></summary>
+          <div class="riddle-answer"><p>No brains required. Sugar naturally moves from sunlit, sugar-rich crowns toward shaded, hungry roots, and keeping young neighbors alive preserves future partners for the shared fungal web.</p></div>
         </details>
-        <details class="riddle">
-          <summary><span class="riddle-mark" aria-hidden="true">?</span><span>What happens if a tree or fungus tries to cheat the deal?</span></summary>
-          <div class="riddle-answer"><p>Both sides bargain like a bustling market: fungi route more minerals toward generous sugar-paying roots, while trees pinch off sugar to root tips where fungi hoard nutrients.</p></div>
+        <details class="riddle" data-riddle="1">
+          <summary><span class="riddle-mark" aria-hidden="true">?</span><span class="riddle-q">What happens if a plant or fungus tries to shortchange the deal?</span></summary>
+          <div class="riddle-answer"><p>Both sides bargain like an honest market: fungi route more rock minerals toward generous sugar-paying roots, while plants pinch off sugar to root tips where fungi hoard nutrients.</p></div>
         </details>
-        <details class="riddle">
-          <summary><span class="riddle-mark" aria-hidden="true">?</span><span>How fast do underground bug warnings travel?</span></summary>
-          <div class="riddle-answer"><p>Roughly <strong>24 to 48 hours</strong> — far slower than animal nerves, yet plenty fast enough to beat hungry caterpillars marching from trunk to trunk.</p></div>
+        <details class="riddle" data-riddle="2">
+          <summary><span class="riddle-mark" aria-hidden="true">?</span><span class="riddle-q">How fast do underground bug-attack warnings travel?</span></summary>
+          <div class="riddle-answer"><p>Roughly <strong>24 to 48 hours</strong>, far slower than animal nerves, yet plenty fast enough to beat leaf-eating insects moving from tree to tree.</p></div>
         </details>
+        <details class="riddle" data-riddle="3">
+          <summary><span class="riddle-mark" aria-hidden="true">?</span><span class="riddle-q">Why do chemical fertilizers and pesticides ruin soil fertility over time?</span></summary>
+          <div class="riddle-answer"><p>Over 400 million years ago, the first land plants had <strong>no roots at all</strong>. Fungi fed them, and roots evolved to expand that bond. Chemical pesticides harm delicate fungal threads, while synthetic fertilizers give plants free surface minerals so they stop paying sugar and break the partnership. Without fungi unlocking deep trace minerals and holding soil together, land degrades and food costs rise, which is why <strong>organic, regenerative farming</strong> is vital for our future.</p></div>
+        </details>
+      </div>
+
+      <div class="research-shelf tablet" id="research-shelf">
+        <div class="research-head">
+          <p class="section-kicker"><span aria-hidden="true">✦</span> Verified Science &amp; Field Action <span aria-hidden="true">✦</span></p>
+          <h3 class="research-title">Peer-Reviewed Research Library</h3>
+          <p class="research-sub">Fact-checked landmark studies behind each chapter, plus how regenerative soil care protects this ancient web.</p>
+        </div>
+        <ul class="research-grid" role="list">
+          <li>
+            <a href="https://doi.org/10.1073/pnas.91.25.11841" target="_blank" rel="noopener noreferrer" class="research-card">
+              <span class="research-cite">Remy et al. · <em>PNAS</em> (1994) <span aria-hidden="true">↗</span></span>
+              <strong>400-million-year-old root and fungus fossils</strong>
+              <span>Fossilized early land plants before true roots evolved, already partnering inside their cells with fungi.</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1038/39493" target="_blank" rel="noopener noreferrer" class="research-card">
+              <span class="research-cite">Jongmans et al. · <em>Nature</em> (1997) <span aria-hidden="true">↗</span></span>
+              <strong>Rock-eating fungi unlock stone minerals</strong>
+              <span>Microscopic tunnels carved into mineral grains by fungal threads where woody roots cannot fit.</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1126/science.1208473" target="_blank" rel="noopener noreferrer" class="research-card">
+              <span class="research-cite">Kiers et al. · <em>Science</em> (2011) <span aria-hidden="true">↗</span></span>
+              <strong>Fair two-way sugar &amp; mineral trading</strong>
+              <span>Plants reward mineral-rich fungal partners with more carbon and cut off payment when minerals come free.</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1038/41557" target="_blank" rel="noopener noreferrer" class="research-card">
+              <span class="research-cite">Simard et al. · <em>Nature</em> (1997) <span aria-hidden="true">↗</span></span>
+              <strong>Carbon sharing between forest species</strong>
+              <span>Field experiments tracing carbon moving underground between fir and birch, especially toward shaded trees.</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1111/ele.12115" target="_blank" rel="noopener noreferrer" class="research-card">
+              <span class="research-cite">Babíková et al. · <em>Ecology Letters</em> (2013) <span aria-hidden="true">↗</span></span>
+              <strong>Underground pest-attack warnings</strong>
+              <span>Shared fungal bridges transmit chemical warning cues from insect-bitten plants to unattacked neighbors.</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1038/s41559-022-01799-8" target="_blank" rel="noopener noreferrer" class="research-card">
+              <span class="research-cite">Edlinger et al. · <em>Nat. Ecol. Evol.</em> (2022) <span aria-hidden="true">↗</span></span>
+              <strong>Chemical farming vs. living fungal soil</strong>
+              <span>Across 150 farm fields, synthetic inputs &amp; pesticides crippled fungal mineral delivery while organic care preserved it.</span>
+            </a>
+          </li>
+        </ul>
+        <p class="research-cta"><strong>How to restore the web:</strong> Support organic and regenerative farms, feed gardens with compost instead of synthetic chemical fertilizers, skip harsh pesticides and fungicides, and keep living roots in the ground year-round.</p>
       </div>
 
       <p class="back-to-game"><a href="#game" class="carved-btn carved-btn--glow">Return to the forest <span aria-hidden="true">↑</span></a></p>
@@ -361,7 +572,7 @@
         <img id="closeup-img-day" src="renders/root_closeup_day_3d.png" width="1360" height="880" alt="Macro Blender render in daylight: copper root wires wrapped by glowing chartreuse and turquoise fungal threads, exchanging golden sugar spheres and cyan mineral droplets.">
         <img id="closeup-img-night" src="renders/root_closeup_night_3d.png" width="1360" height="880" hidden alt="Macro Blender render at night: bioluminescent fungal threads coiled around dark amber root wires, trading golden sugar and cyan minerals.">
       </div>
-      <p>Hair-fine fungal filaments coil right around the root (a <strong>Hartig net</strong>), swapping cyan rock minerals for golden tree sugar without ever harming it.</p>
+      <p id="closeup-caption">On this forest root, fungal threads weave a <strong>Hartig net</strong> <em>(noun: a microscopic web wrapping around the outer walls of root cells)</em>. In most farm crops and grasses, <strong>arbuscular</strong> threads <em>(adjective: pressing gently inside root cell walls to branch)</em> swap blue rock minerals for golden tree sugar without harming the root.</p>
     </div>
   </dialog>
 </body>

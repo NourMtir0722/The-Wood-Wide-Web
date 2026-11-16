@@ -1,57 +1,426 @@
-/* The Wood Wide Web — game UI
- * Title menu, quest journal, lore meter, codex markers and toasts. The 3D world lives in
- * engine.js; everything here keeps working (minus the 3D) if the engine can't start.
+/* The Wood Wide Web: game UI
+ * Title menu, audience age switcher, quest journal, lore meter, codex markers and toasts.
+ * The 3D world lives in engine.js; everything here keeps working (minus the 3D) if the engine can't start.
  */
 (() => {
   'use strict';
 
+  const AGE_STORAGE_KEY = 'www-age-mode';
+
   // ===========================================================================
-  // 1. Content & camera choreography
+  // 1. Age-adapted content (Under 12 · Teens · Adults) & camera choreography
   // ===========================================================================
-  const ORGANISM_INFO = {
-    fir: {
-      title: 'Elder Fir',
-      tag: 'Mother hub tree',
-      what: 'A towering sunlit evergreen wired into dozens of neighbors through deep roots and fungi.',
-      gives: 'Up to 30% of its sunlit carbon sugar into the fungal network',
-      gets: 'Deep rock water, phosphorus and nitrogen delivered to its root tips'
+  const AGE_MODES = {
+    kids: {
+      badge: 'Under 12 · Simple & playful',
+      titleSub: 'Discover the secret underground web where trees and fungi share snacks and warnings',
+      sunQuestLabel: 'Field mission · Slide the sunshine power',
+      sunSliderLabel: 'Sunshine power',
+      closeupCaption: 'Super-thin fungal threads hug this tree root like a cozy glove, touching the outside of root cells (while other fungi poke tiny trading fingers right inside root cells!) to swap blue rock minerals for golden tree sugar.',
+      loreHeading: 'Tell the whole secret in 60 seconds',
+      loreSub: 'Four big forest secrets you can share with anyone.',
+      riddlesHeading: 'Four questions curious kids always ask',
+      riddlesSub: 'Tap a scroll to uncover how the underground forest really works.',
+      menuChapters: [
+        'Leaves & Rocks',
+        'The Root Handshake',
+        'Helping Baby Trees',
+        'Secret Bug Alarms',
+        'Sneaky Ghost Plants',
+        'Healthy Living Soil'
+      ],
+      chapters: [
+        {
+          kicker: 'Chapter I · Two Halves of a Puzzle',
+          title: 'Leaves cook sweet sugar, while rocks hide tiny minerals',
+          text: 'Way up in the sunshine, green leaves cook up sweet <strong>sugar</strong> for food. Deep underground, <strong>water and rock minerals</strong> hide inside teeny-tiny stone cracks that are way too skinny for thick wooden tree roots to squeeze into alone!',
+          mission: 'Dive underground into the root web'
+        },
+        {
+          kicker: 'Chapter II · The Underground Swap',
+          title: 'Fungi trade rock minerals for sweet tree sugar',
+          text: 'Glowing <strong>fungal threads</strong> thinner than hair unlock blue rock minerals and hold hands with tree roots. Some fungi wrap around the outside of root cells like a glove, while others gently poke tiny trading fingers right inside the root cells! There, fungi hand over water and <strong>minerals</strong>, and get paid in golden sugar.',
+          mission: 'Zoom in on the root handshake'
+        },
+        {
+          kicker: 'Chapter III · Helping Baby Trees',
+          title: 'Sunny giant trees share extra sugar with shaded saplings',
+          text: 'One big fungal web connects the whole forest neighborhood! Tall trees soaking up bright sunshine pour extra sugar into the shared underground threads, where it flows into tiny <strong>baby trees</strong> waiting in the dark shade.',
+          mission: ''
+        },
+        {
+          kicker: 'Chapter IV · Secret Bug Alarms',
+          title: 'Chewed-up trees send underground bug warnings',
+          text: 'Uh-oh! Hungry caterpillars are munching the Elder Fir. Warning signals zip down its roots and race across the fungal bridges. Neighboring <strong>Paper Birches</strong> feel the alarm and mix up bitter, yucky-tasting leaves before the bugs march over!',
+          mission: 'Send a caterpillar attack!'
+        },
+        {
+          kicker: 'Chapter V · Sneaky Sugar Thieves',
+          title: 'Spooky white plants sip free sugar from the web',
+          text: 'Spot that pale white <strong>Ghost Pipe</strong> on the right? It has zero green leaves and cannot make food from sunshine at all! Instead, it plugs into the underground fungal threads like a tiny straw and sips free tree sugar without sharing anything back.',
+          mission: 'Spot the sneaky Ghost Pipe'
+        },
+        {
+          kicker: 'Chapter VI · Protect Living Soil',
+          title: 'Harsh chemicals break this friendship, while healthy soil saves it!',
+          text: 'Before dinosaurs existed, the very first land plants had <strong>no roots at all</strong> because friendly fungi fed them! Today, bug sprays and harsh <strong>chemical fertilizers</strong> hurt delicate fungi, and free chemical plant-food makes trees stop sharing sugar so the bridge breaks. Growing food gently with compost keeps soil alive!',
+          missionShock: 'Test chemical fertilizer shock on the web',
+          missionRestore: 'Restore healthy living soil!',
+          toastShock: 'Free chemicals stopped the trade and fungal threads went dark!',
+          toastRestore: 'Compost and gentle care brought the fungal web back!'
+        }
+      ],
+      organisms: {
+        fir: {
+          title: 'Elder Fir',
+          tag: 'Big sunny helper tree',
+          what: 'A giant evergreen soaking up sunshine and connected underground to dozens of forest neighbors.',
+          gives: 'Shares lots of sweet sun-made sugar into the underground fungal web',
+          gets: 'Deep rock water and minerals delivered right to its root tips'
+        },
+        sapling: {
+          title: 'Baby Sapling',
+          tag: 'Little shaded tree',
+          what: 'A tiny young tree growing in dark forest shade where almost no sunbeams reach.',
+          gives: 'Will grow tall one day and share its own sunshine sugar back with the web',
+          gets: 'Extra sugar and rock minerals sent across shared fungal bridges'
+        },
+        birch: {
+          title: 'Paper Birch',
+          tag: 'Friendly neighbor tree',
+          what: 'A totally different kind of tree with white bark, yet plugged into the very same web!',
+          gives: 'Extra summer leaf sugar into the shared underground threads',
+          gets: 'Early caterpillar warnings and deep rock minerals'
+        },
+        mycelium: {
+          title: 'Fungal Web',
+          tag: 'The underground bridge',
+          what: 'Miles of living threads 50 times skinnier than a hair! Mushrooms above ground are just its tiny fruit.',
+          gives: 'Water and rock minerals squeezed out of tiny stone cracks roots cannot reach',
+          gets: 'Sweet tree sugar, since fungi have no green leaves to cook their own food'
+        },
+        ghost: {
+          title: 'Ghost Pipe',
+          tag: 'Sneaky sugar thief',
+          what: 'A spooky, waxy white forest plant with zero green leaves that acts like a tiny sugar freeloader.',
+          gives: 'Nothing at all, because it never makes food from sunshine',
+          gets: 'Free tree sugar sipped straight out of living fungal threads'
+        }
+      },
+      tablets: [
+        {
+          title: 'Mushrooms are just the tiny fruit',
+          body: 'A mushroom is not the whole fungus. It is like one apple on a giant hidden underground tree made of miles of threads!'
+        },
+        {
+          title: 'Sugar swaps for rock minerals',
+          body: 'Trees pay fungi with sweet sunshine sugar; fungi hug or reach gently inside root cells to pay back water and rock minerals.'
+        },
+        {
+          title: 'One web connects the neighborhood',
+          body: 'Shared fungal bridges let extra sugar reach shaded baby trees and carry early bug-attack warnings between neighbors.'
+        },
+        {
+          title: 'Living soil grows healthy food',
+          body: 'Harsh bug sprays and chemical fertilizers break this ancient friendship. Compost and gentle farming keep underground helpers thriving!'
+        }
+      ],
+      riddles: [
+        {
+          q: 'Do big trees “think” like brains when feeding baby trees?',
+          a: 'No brains needed! Sugar naturally flows from full, sunny tree roots toward hungry, shaded roots, and keeping young trees alive saves future partners for the fungi.'
+        },
+        {
+          q: 'What happens if a tree or fungus tries to be greedy?',
+          a: 'Both sides trade fairly like a swap meet: fungi bring more rock minerals to generous roots, and trees stop sending sugar to root tips where fungi do not share.'
+        },
+        {
+          q: 'How fast do underground bug warnings travel?',
+          a: 'About <strong>1 to 2 days</strong>, much slower than your nerves, yet plenty fast enough to beat munching caterpillars crawling from tree to tree!'
+        },
+        {
+          q: 'How can kids and families help protect this underground web?',
+          a: 'Long ago, the very first land plants had <strong>no roots at all</strong> and needed fungi to live! Harsh garden sprays and <strong>chemical fertilizers</strong> hurt fungi and make plants stop sharing sugar. You can help by composting kitchen scraps, skipping bug poisons, and planting lots of different flowers and veggies together!'
+        }
+      ]
     },
-    sapling: {
-      title: 'Shaded Sapling',
-      tag: 'Baby tree',
-      what: 'A tiny evergreen growing under thick canopy shade where scarce sunbeams reach.',
-      gives: 'A future sunlit partner for the fungal web once it grows tall',
-      gets: 'Life-saving sugar and minerals routed through shared fungal bridges'
+
+    teens: {
+      badge: 'Teens · Clear forest science',
+      titleSub: 'Explore how trees and fungi trade sugar, rock minerals, and warnings underground',
+      sunQuestLabel: 'Field mission · Test the canopy sunlight',
+      sunSliderLabel: 'Sunbeam power',
+      closeupCaption: 'Depending on the type of fungus, threads either weave snugly around the outer walls of root cells (shown here) or reach gently inside the root cells themselves, swapping blue rock minerals for golden tree sugar without harming the root.',
+      loreHeading: 'Explain the whole network in a minute',
+      loreSub: 'Four core ideas connecting wild forests to the soil that grows our food.',
+      riddlesHeading: 'Four questions people always ask',
+      riddlesSub: 'Open a scroll to see how the underground trade really works.',
+      menuChapters: [
+        'Leaves & Rocks',
+        'The Root Handshake',
+        'Shared Forest Web',
+        'Bug-Attack Warnings',
+        'The Ghost Plant',
+        'Living Soil & Us'
+      ],
+      chapters: [
+        {
+          kicker: 'Chapter I · The Forest Puzzle',
+          title: 'Leaves brew sugar in sunlight, while rocks lock away minerals',
+          text: 'Up in the sunlit canopy, leaves turn sunlight and air into energy-rich <strong>sugar</strong>. Deep underground, vital <strong>water, nitrogen, and phosphorus</strong> sit trapped inside microscopic rock cracks far too narrow for woody tree roots to enter alone.',
+          mission: 'Dive the camera into the root web'
+        },
+        {
+          kicker: 'Chapter II · The Root Handshake',
+          title: 'Fungi wrap around or reach inside root cells to trade',
+          text: 'Hair-thin <strong>fungal threads</strong> dissolve rock minerals and join directly with roots. Depending on the type of fungus, threads either sit touching the outer walls of root cells like a woven glove, or press gently inside the root cells themselves, trading water and <strong>minerals</strong> for golden tree sugar.',
+          mission: 'Inspect the root handshake up close'
+        },
+        {
+          kicker: 'Chapter III · Shared Forest Web',
+          title: 'Sunlit elder trees route extra sugar to shaded saplings',
+          text: 'Because one fungal web links many trees across the glade, including different species, resources move from high supply to high need. Tall sunlit trees pour surplus sugar into shared threads, helping <strong>shaded saplings</strong> survive on the dim forest floor.',
+          mission: ''
+        },
+        {
+          kicker: 'Chapter IV · Underground Warnings',
+          title: 'Bitten trees send chemical bug alarms to their neighbors',
+          text: 'When caterpillars chew on the Elder Fir, chemical stress signals travel down its roots and cross shared fungal bridges within a day or two. Neighboring <strong>Paper Birches</strong> detect the warning and brew bitter natural bug-repellent before pests arrive.',
+          mission: 'Launch a caterpillar attack'
+        },
+        {
+          kicker: 'Chapter V · Forest Freeloaders',
+          title: 'Pale ghost plants live like parasites on the fungal web',
+          text: 'Look closely at the waxy white <strong>Ghost Pipe</strong> on the right. With zero green pigment in its stems, it makes no food from sunlight at all. Instead, it lives like a quiet parasite, tapping straight into fungal threads to draw tree sugar without paying anything back.',
+          mission: 'Fly over to the Ghost Pipe'
+        },
+        {
+          kicker: 'Chapter VI · An Ancient Pact at Risk',
+          title: 'Why synthetic chemicals break a 400-million-year partnership',
+          text: 'Over 400 million years ago, the very first land plants had <strong>no roots at all</strong>. Fungi fed them, and roots evolved to give fungi more surface area to trade! Chemical pesticides kill sensitive fungal threads, while heavy <strong>chemical fertilizers</strong> hand plants free surface nutrients so they stop paying sugar and break the bond. Organic, living soil care brings it back.',
+          missionShock: 'Simulate chemical fertilizer shock',
+          missionRestore: 'Restore living soil',
+          toastShock: 'Partnership broken: chemical inputs shut down the fungal web',
+          toastRestore: 'Living soil restored: roots and fungi trade again'
+        }
+      ],
+      organisms: {
+        fir: {
+          title: 'Elder Fir',
+          tag: 'Sunlit hub tree',
+          what: 'A towering evergreen linked underground to dozens of neighbors through deep roots and fungal threads.',
+          gives: 'Up to a third of its sun-made carbon sugar into the fungal network',
+          gets: 'Deep rock water, phosphorus, and nitrogen delivered to its roots'
+        },
+        sapling: {
+          title: 'Shaded Sapling',
+          tag: 'Young understory tree',
+          what: 'A young evergreen growing under thick canopy shade where scarce sunlight reaches.',
+          gives: 'A future sunlit sugar-trading partner once it reaches the canopy',
+          gets: 'Extra sugar and rock minerals routed through shared fungal bridges'
+        },
+        birch: {
+          title: 'Paper Birch',
+          tag: 'Neighbor species',
+          what: 'A completely different broadleaf species, yet wired into the very same underground fungal web.',
+          gives: 'Summer leaf-sugar surpluses into the shared underground grid',
+          gets: 'Early caterpillar-attack warnings and deep rock minerals'
+        },
+        mycelium: {
+          title: 'Fungal Web',
+          tag: 'The living network',
+          what: 'Miles of living threads 50 times thinner than hair. Forest mushrooms aren’t just food, they are only its seasonal fruit.',
+          gives: 'Water and minerals dissolved out of tiny rock pores roots cannot enter',
+          gets: 'Sweet tree sugar, because fungi have no green leaves to make their own'
+        },
+        ghost: {
+          title: 'Ghost Pipe',
+          tag: 'Network parasite',
+          what: 'An eerie, waxy white forest plant with no green pigment, living like a parasite on the underground web.',
+          gives: 'Nothing at all, since it makes zero food from sunlight',
+          gets: 'Free tree sugar drawn straight out of living fungal threads'
+        }
+      },
+      tablets: [
+        {
+          title: 'Mushrooms aren’t just food, they’re only the fruit',
+          body: 'Nearly the entire fungus lives out of sight underground as miles of threads weaving roots together; mushrooms are only its seasonal fruit.'
+        },
+        {
+          title: 'Sugar trades for rock minerals',
+          body: 'Trees pay fungi with sunlit sugar; fungi hug outer root cells or reach gently inside them to pay back deep water, nitrogen, and phosphorus.'
+        },
+        {
+          title: 'One web links the neighborhood',
+          body: 'Shared fungal bridges let extra sugar reach shaded saplings and carry chemical pest-attack warnings between trees around the world.'
+        },
+        {
+          title: 'Living soil feeds our future',
+          body: 'Chemical fertilizers and pesticides rupture this 400-million-year partnership and wear out soil; organic care restores it.'
+        }
+      ],
+      riddles: [
+        {
+          q: 'Do big trees “think” like brains when feeding shaded saplings?',
+          a: 'No brains required! Sugar naturally moves from sunlit, sugar-rich roots toward shaded, hungry roots, and keeping young trees alive protects future sugar-trading partners for the fungus.'
+        },
+        {
+          q: 'What happens if a plant or fungus tries to cheat the deal?',
+          a: 'Both sides bargain like a real market: fungi send more rock minerals toward generous sugar-paying roots, while plants cut off sugar to root tips where fungi hoard nutrients.'
+        },
+        {
+          q: 'How fast do underground bug-attack warnings travel?',
+          a: 'Roughly <strong>24 to 48 hours</strong>, far slower than animal nerves, yet plenty fast enough to beat caterpillars marching from trunk to trunk.'
+        },
+        {
+          q: 'Why do synthetic fertilizers and pesticides damage farmland over time?',
+          a: 'The earliest land plants had <strong>no roots at all</strong>. They relied completely on fungi, and roots evolved to expand that trade. Pesticides kill delicate fungal threads, while synthetic fertilizers dump free minerals on top so plants stop paying sugar and sever the connection. Without fungi mining deep trace minerals, soil wears out and food prices rise, which is why <strong>organic, living-soil farming</strong> matters.'
+        }
+      ]
     },
-    birch: {
-      title: 'Paper Birch',
-      tag: 'Neighbor tree',
-      what: 'A completely different species — yet it shares the very same underground web.',
-      gives: 'Summer leaf-sugar surpluses into the shared fungal grid',
-      gets: 'Early caterpillar-attack warnings and deep rock nutrients'
-    },
-    mycelium: {
-      title: 'Mycelium Web',
-      tag: 'The network itself',
-      what: 'Miles of living filaments 50× finer than hair. Forest mushrooms are only its seasonal fruit.',
-      gives: 'Minerals dissolved out of microscopic rock cracks roots cannot enter',
-      gets: 'Sweet tree sugar — fungi have no green leaves to make their own'
-    },
-    ghost: {
-      title: 'Ghost Pipe',
-      tag: 'The bandit',
-      what: 'An eerie, waxy white forest plant with zero chlorophyll — a clever underground hacker.',
-      gives: 'Nothing at all — it never photosynthesizes',
-      gets: 'Free tree sugar siphoned straight out of living fungal threads'
+
+    adults: {
+      badge: 'Adults · Science dictionary & research',
+      titleSub: 'How trees, fungi, and living soil sustain forests and our food beneath our feet',
+      sunQuestLabel: 'Field mission · Adjust canopy sunlight',
+      sunSliderLabel: 'Canopy sunlight',
+      closeupCaption: 'On this forest root, fungal threads weave a <strong>Hartig net</strong> <em>(noun: a microscopic web wrapping around the outer walls of root cells)</em>. In most farm crops and grasses, <strong>arbuscular</strong> threads <em>(adjective: pressing gently inside root cell walls to branch)</em> swap blue rock minerals for golden tree sugar without harming the root.',
+      loreHeading: 'Explain the whole secret in a minute',
+      loreSub: 'Four core truths connecting wild forests to the soil that grows our food.',
+      riddlesHeading: 'Four questions listeners always ask',
+      riddlesSub: 'Open a scroll to reveal the real forest & soil science.',
+      menuChapters: [
+        'Leaves & Rocks',
+        'The Root Handshake',
+        'Neighborhood Bridges',
+        'Bug-Attack Warnings',
+        'The Ghost Plant',
+        'Living Soil & Us'
+      ],
+      chapters: [
+        {
+          kicker: 'Chapter I · The Underground Economy',
+          title: 'Leaves capture sunlit sugar, while rocks lock away vital minerals',
+          text: 'In the sunlit canopy, leaves use <span class="sci-term">photosynthesis</span> to turn sunlight and air into <strong>sugar</strong>. Deep below, essential <strong>water, phosphorus, and nitrogen</strong> sit locked inside microscopic rock pores that only hair-fine fungal <span class="sci-term">hyphae</span> can enter.',
+          mission: 'Inspect the underground root network'
+        },
+        {
+          kicker: 'Chapter II · The Cellular Handshake',
+          title: 'Fungi trade rock minerals for tree sugar right at the root wall',
+          text: 'Fungal threads unlock rock minerals and form a <span class="sci-term">mycorrhiza</span> with roots. Depending on the fungus, <span class="sci-term">ectomycorrhizal</span> threads wrap around the outer walls of root cells (common in forest trees), while <span class="sci-term">arbuscular</span> threads press gently inside root cell walls (common in farm crops), trading water and <strong>minerals</strong> for golden sugar.',
+          mission: 'Examine the root-cell handshake up close'
+        },
+        {
+          kicker: 'Chapter III · Neighborhood Bridges',
+          title: 'Shared fungal bridges move carbon between sunlit and shaded trees',
+          text: 'Field studies worldwide using <span class="sci-term">carbon isotopes</span> have tracked sugar moving underground through shared <span class="sci-term">mycelium</span> between neighboring trees, even across species like fir and birch. Extra sugar from sunlit crowns flows along fungal bridges toward <strong>shaded seedlings</strong> on the dim forest floor.',
+          mission: ''
+        },
+        {
+          kicker: 'Chapter IV · Early Defense Signals',
+          title: 'Pest-damaged plants pass chemical warnings across fungal threads',
+          text: 'When leaf-eating insects chew on the Elder Fir, chemical stress cues move into its roots and cross shared fungal bridges within 24 to 48 hours. Connected neighbors like the <strong>Paper Birch</strong> detect the alert and brew protective <span class="sci-term">tannins</span> in their leaves before pests spread.',
+          mission: 'Trigger insect attack & watch the signal'
+        },
+        {
+          kicker: 'Chapter V · Parasites on the Network',
+          title: 'Some pale forest plants live as parasites on the fungal web',
+          text: 'Notice the waxy white <strong>Ghost Pipe</strong> on the right. Completely lacking green <span class="sci-term">chlorophyll</span>, it makes zero food from sunlight. Instead, it evolved into a <span class="sci-term">mycoheterotroph</span>, attaching to living fungal threads like a parasite to draw tree sugar without giving anything back.',
+          mission: 'Inspect the parasitic Ghost Pipe'
+        },
+        {
+          kicker: 'Chapter VI · Living Soil & Our Food',
+          title: 'Chemicals break a 400-million-year pact, while living soil restores it',
+          text: 'The earliest land plants had <strong>no roots at all</strong>; they lived in total <span class="sci-term">symbiosis</span> with fungi, and roots evolved to expand that bond. Chemical pesticides kill delicate fungi, while synthetic fertilizers give plants free surface minerals so they stop paying sugar and sever the connection. Stripped of fungi’s deep mineral reach, soils lose fertility and food prices climb. <span class="sci-term">Regenerative</span> care restores living soil.',
+          missionShock: 'Test chemical fertilizer shock on the web',
+          missionRestore: 'Restore living regenerative soil',
+          toastShock: 'Connection severed: plants stopped paying fungi under chemical inputs',
+          toastRestore: 'Living soil restored: deep mineral and sugar exchange resumes'
+        }
+      ],
+      organisms: {
+        fir: {
+          title: 'Elder Fir',
+          tag: 'Mature hub tree',
+          what: 'A towering sunlit evergreen linked into dozens of neighbors through deep roots and shared fungal threads.',
+          gives: 'Up to 30% of its sunlit carbon sugar into the underground fungal network',
+          gets: 'Deep rock water, phosphorus, nitrogen, and trace minerals at its root tips'
+        },
+        sapling: {
+          title: 'Shaded Sapling',
+          tag: 'Understory seedling',
+          what: 'A young evergreen growing beneath dense canopy shade where scarce direct sunlight reaches.',
+          gives: 'A future sunlit sugar-supplying partner once it reaches the upper canopy',
+          gets: 'Supplemental carbon sugar and rock minerals routed across shared fungal bridges'
+        },
+        birch: {
+          title: 'Paper Birch',
+          tag: 'Broadleaf neighbor',
+          what: 'A completely different tree species connected into the very same underground fungal web.',
+          gives: 'Summer leaf-sugar surpluses into the shared underground network',
+          gets: 'Early insect-attack warning cues and deep rock minerals'
+        },
+        mycelium: {
+          title: 'Mycelium Web',
+          tag: 'The living network',
+          what: 'Mycelium (noun: the underground thread body of a fungus) stretches for miles 50 times finer than hair. Mushrooms aren’t just food, they are only its seasonal fruit.',
+          gives: 'Water and trace minerals dissolved from microscopic rock pores roots cannot enter',
+          gets: 'Sunlit plant sugar, since fungi lack green leaves to make food from light'
+        },
+        ghost: {
+          title: 'Ghost Pipe',
+          tag: 'Parasitic forest plant',
+          what: 'A waxy white plant lacking chlorophyll (noun: green pigment that captures sunlight), surviving as a parasite on the fungal web.',
+          gives: 'Nothing in return, because it makes zero food from sunlight',
+          gets: 'Tree sugar drawn directly out of living fungal threads'
+        }
+      },
+      tablets: [
+        {
+          title: 'Mushrooms aren’t just food, they’re only the fruit',
+          body: 'Nearly the entire fungus lives underground as miles of threads weaving tree roots together, while mushrooms are only its seasonal fruit.'
+        },
+        {
+          title: 'Sugar trades for rock minerals',
+          body: 'Trees pay fungi with sunlit carbon sugar; fungi wrap around or reach inside root cells to pay back deep water, nitrogen, and phosphorus.'
+        },
+        {
+          title: 'One web links the neighborhood',
+          body: 'Shared fungal bridges let extra sugar reach shaded seedlings and carry chemical bug-attack warnings between neighboring trees.'
+        },
+        {
+          title: 'Living soil feeds our future',
+          body: 'Chemical fertilizers and pesticides rupture this 400-million-year partnership and exhaust farmland; regenerative soil care restores it.'
+        }
+      ],
+      riddles: [
+        {
+          q: 'Do big trees “think” like brains when feeding shaded seedlings?',
+          a: 'No brains required. Sugar naturally moves from sunlit, sugar-rich crowns toward shaded, hungry roots, and keeping young neighbors alive preserves future partners for the shared fungal web.'
+        },
+        {
+          q: 'What happens if a plant or fungus tries to shortchange the deal?',
+          a: 'Both sides bargain like an honest market: fungi route more rock minerals toward generous sugar-paying roots, while plants pinch off sugar to root tips where fungi hoard nutrients.'
+        },
+        {
+          q: 'How fast do underground bug-attack warnings travel?',
+          a: 'Roughly <strong>24 to 48 hours</strong>, far slower than animal nerves, yet plenty fast enough to beat leaf-eating insects moving from tree to tree.'
+        },
+        {
+          q: 'Why do chemical fertilizers and pesticides ruin soil fertility over time?',
+          a: 'Over 400 million years ago, the first land plants had <strong>no roots at all</strong>. Fungi fed them, and roots evolved to expand that bond. Chemical pesticides harm delicate fungal threads, while synthetic fertilizers give plants free surface minerals so they stop paying sugar and break the partnership. Without fungi unlocking deep trace minerals and holding soil together, land degrades and food costs rise, which is why <strong>organic, regenerative farming</strong> is vital for our future.'
+        }
+      ]
     }
   };
 
   const LORE_NAMES = {
     'step-0': 'Leaves & Rocks',
-    'step-1': 'The Underground Pact',
-    'step-2': 'Kinship Network',
-    'step-3': 'Whispering Wires',
-    'step-4': 'The Ghost Bandit',
+    'step-1': 'The Root Handshake',
+    'step-2': 'Neighborhood Bridges',
+    'step-3': 'Bug-Attack Warnings',
+    'step-4': 'The Ghost Plant',
+    'step-5': 'Living Soil & Us',
     'pin-fir': 'Elder Fir',
     'pin-sapling': 'Shaded Sapling',
     'pin-birch': 'Paper Birch',
@@ -60,13 +429,13 @@
   };
 
   const RANKS = [
-    [10, 'Forest Whisperer'],
-    [7, 'Mycelium Seer'],
+    [11, 'Forest Whisperer'],
+    [8, 'Mycelium Seer'],
     [4, 'Root Ranger'],
     [0, 'Sprout Scout']
   ];
 
-  const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
+  const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
 
   // yaw, pitch, distance, look-at target, lens FOV
   const STEP_CAMERAS = [
@@ -74,7 +443,8 @@
     { yaw: -0.3, pitch: -0.05, dist: 6.1, target: [-1.22, -1.52, 0.42], fov: 28 },
     { yaw: 0.15, pitch: 0.1, dist: 7.9, target: [-0.2, -0.38, 0.22], fov: 32 },
     { yaw: -0.15, pitch: 0.17, dist: 11.1, target: [0.05, -0.18, 0.0], fov: 37 },
-    { yaw: 0.54, pitch: 0.12, dist: 6.5, target: [2.52, -0.28, 0.7], fov: 29 }
+    { yaw: 0.54, pitch: 0.12, dist: 6.5, target: [2.52, -0.28, 0.7], fov: 29 },
+    { yaw: -0.24, pitch: 0.06, dist: 10.8, target: [-0.05, -0.62, 0.1], fov: 35 }
   ];
 
   const NAMED_CAMERAS = {
@@ -97,6 +467,7 @@
   const game = $('#game');
   const canvas = $('#world');
   const titleScreen = $('#title-screen');
+  const titleSub = $('#title-sub');
   const menuMain = $('#menu-main');
   const menuChapters = $('#menu-chapters');
   const hudTop = $('#hud-top');
@@ -126,25 +497,40 @@
   const xrayBtn = $('#soil-xray-btn');
   const codex = $('#codex');
   const closeup = $('#closeup-dialog');
+  const closeupCaption = $('#closeup-caption');
   const lensBtn = $('#dialog-lighting-btn');
   const lensDay = $('#closeup-img-day');
   const lensNight = $('#closeup-img-night');
   const slider = $('#sunlight-slider');
   const sliderOut = $('#sunlight-readout');
+  const soilShockBtn = $('#toggle-soil-shock-btn');
+  const ageInputs = $$('.age-picker input[type="radio"]');
+  const sciDicts = $$('.sci-dict');
+  const chapterSources = $$('.chapter-sources');
+  const researchShelf = $('#research-shelf');
   const engineStatus = $('#engine-status');
+
+  let savedAge = 'adults';
+  try {
+    const raw = localStorage.getItem(AGE_STORAGE_KEY);
+    if (raw && raw in AGE_MODES) savedAge = raw;
+  } catch (_) { /* storage unavailable */ }
 
   const state = {
     screen: 'title',
+    age: savedAge,
     step: 0,
     started: false,
     night: true,
     paused: false,
     journalOpen: true,
+    soilShock: false,
     discovered: new Set(),
     layout: { W: 0, H: 0, hudH: 0, bottomH: 0, journal: null }
   };
 
   let engine = null;
+  let lastPin = null;
   const sfx = typeof window.createForestSfx === 'function' ? window.createForestSfx() : null;
 
   function syncSfxButtons() {
@@ -159,7 +545,139 @@
   }
 
   // ===========================================================================
-  // 3. Screens: title ↔ play
+  // 2b. Audience age adaptation (Under 12 · Teens · Adults)
+  // ===========================================================================
+  function syncSoilShockBtn() {
+    if (!soilShockBtn) return;
+    const ch6 = AGE_MODES[state.age].chapters[5];
+    soilShockBtn.setAttribute('aria-pressed', String(state.soilShock));
+    soilShockBtn.classList.toggle('quest-action--danger', !state.soilShock);
+    soilShockBtn.classList.toggle('quest-action--restore', state.soilShock);
+    const txt = soilShockBtn.querySelector('.quest-action-text');
+    if (txt) txt.textContent = state.soilShock ? ch6.missionRestore : ch6.missionShock;
+  }
+
+  function applyAgeMode(mode, { playSfx = false, announce = false } = {}) {
+    if (!(mode in AGE_MODES)) return;
+    state.age = mode;
+    try {
+      localStorage.setItem(AGE_STORAGE_KEY, mode);
+    } catch (_) { /* ignore */ }
+
+    for (const inp of ageInputs) inp.checked = inp.value === mode;
+
+    const copy = AGE_MODES[mode];
+    const isAdults = mode === 'adults';
+
+    if (titleSub) titleSub.textContent = copy.titleSub;
+
+    // Chapter select menu items
+    copy.menuChapters.forEach((label, idx) => {
+      const el = $(`[data-chapter-menu="${idx}"]`);
+      if (el) el.textContent = label;
+    });
+
+    // Pin visible labels
+    for (const pin of pins) {
+      const info = copy.organisms[pin.dataset.pin];
+      const lbl = pin.querySelector('.pin-label');
+      if (info && lbl) lbl.textContent = info.title;
+    }
+
+    // All 6 Quest Journal panels
+    copy.chapters.forEach((ch, idx) => {
+      const panel = $(`[data-chapter-panel="${idx}"]`);
+      if (!panel) return;
+      const kicker = panel.querySelector('.chapter-kicker');
+      const title = panel.querySelector('.chapter-title');
+      const text = panel.querySelector('.chapter-text');
+      if (kicker) kicker.textContent = ch.kicker;
+      if (title) title.textContent = ch.title;
+      if (text) text.innerHTML = ch.text;
+      if (idx < 5 && ch.mission) {
+        const mText = panel.querySelector('.quest-action-text');
+        if (mText) mText.textContent = ch.mission;
+      }
+    });
+    const sunQuestLabel = $('#sun-quest-label');
+    const sunSliderLabel = $('#sun-slider-label');
+    if (sunQuestLabel) sunQuestLabel.textContent = copy.sunQuestLabel;
+    if (sunSliderLabel) sunSliderLabel.textContent = copy.sunSliderLabel;
+    syncSoilShockBtn();
+
+    // Adult-only pocket dictionary entries & peer-reviewed research links
+    for (const dict of sciDicts) dict.hidden = !isAdults;
+    for (const src of chapterSources) src.hidden = !isAdults;
+    if (researchShelf) researchShelf.hidden = !isAdults;
+
+    // Spirit lens modal
+    if (closeupCaption) closeupCaption.innerHTML = copy.closeupCaption;
+
+    // Refresh open codex popover if visible
+    if (lastPin) {
+      const key = lastPin.dataset.pin;
+      const info = copy.organisms[key];
+      if (info) {
+        $('#codex-tag').textContent = lastPin.classList.contains('is-discovered') ? info.tag : `Codex entry unlocked · ${info.tag}`;
+        $('#codex-title').textContent = info.title;
+        $('#codex-what').textContent = info.what;
+        $('#codex-gives').textContent = info.gives;
+        $('#codex-gets').textContent = info.gets;
+        if (codex.matches?.(':popover-open')) placeCodex();
+      }
+    }
+
+    // Lore tablets & Campfire riddles
+    const loreHeading = $('#lore-heading');
+    const loreSub = $('#lore-sub');
+    if (loreHeading) loreHeading.textContent = copy.loreHeading;
+    if (loreSub) loreSub.textContent = copy.loreSub;
+    copy.tablets.forEach((tab, idx) => {
+      const card = $(`[data-lore-tablet="${idx}"]`);
+      if (!card) return;
+      const h3 = card.querySelector('h3');
+      const p = card.querySelector('p');
+      if (h3) h3.textContent = tab.title;
+      if (p) p.textContent = tab.body;
+    });
+
+    const riddlesHeading = $('#riddles-heading');
+    const riddlesSub = $('#riddles-sub');
+    if (riddlesHeading) riddlesHeading.textContent = copy.riddlesHeading;
+    if (riddlesSub) riddlesSub.textContent = copy.riddlesSub;
+    copy.riddles.forEach((r, idx) => {
+      const det = $(`[data-riddle="${idx}"]`);
+      if (!det) return;
+      const q = det.querySelector('.riddle-q');
+      const a = det.querySelector('.riddle-answer p');
+      if (q) q.textContent = r.q;
+      if (a) a.innerHTML = r.a;
+    });
+
+    if (playSfx) sfx?.ageSwitch(mode);
+    if (announce) {
+      if (state.screen === 'play') {
+        toast({ kind: 'lore', kicker: 'Audience mode', text: copy.badge, duration: 2600 });
+      }
+      liveStatus.textContent = `Explanation adapted for ${copy.badge}.`;
+    }
+    measureLayout();
+    updateInsets();
+  }
+
+  for (const inp of ageInputs) {
+    inp.addEventListener('change', () => {
+      if (inp.checked) applyAgeMode(inp.value, { playSfx: true, announce: true });
+    });
+  }
+  for (const el of $$('.age-pill, .sources-list a, .research-card')) {
+    el.addEventListener('pointerenter', (e) => {
+      if (e.pointerType !== 'touch') sfx?.hover();
+    });
+  }
+
+  // ===========================================================================
+  // 3. Screens: title <-> play
   // ===========================================================================
   function setScreen(screen) {
     state.screen = screen;
@@ -217,11 +735,18 @@
     else if (item.dataset.chapter) startQuest(Number(item.dataset.chapter));
   });
 
-  // Arrow keys move through the menu; Enter anywhere starts the quest
+  // Arrow keys move through the menu; Enter starts the quest
   document.addEventListener('keydown', (e) => {
     if (state.screen !== 'title' || e.defaultPrevented || e.altKey || e.metaKey || e.ctrlKey) return;
     const gameRect = game.getBoundingClientRect();
     if (gameRect.bottom < 120) return; // scrolled away to the lore section
+    if (e.target?.closest?.('.age-picker')) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        startQuest(0);
+      }
+      return;
+    }
     const items = $$('.menu-list:not([hidden]) .menu-item');
     const idx = items.indexOf(document.activeElement);
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
@@ -243,6 +768,7 @@
   // ===========================================================================
   // 4. Lore meter, ranks & toasts
   // ===========================================================================
+  const MAX_RUNES = sockets.length;
   const rankFor = (n) => RANKS.find(([min]) => n >= min)[1];
 
   function toast({ kind = 'lore', kicker, text, duration = 3200 }) {
@@ -274,15 +800,18 @@
     }
 
     const isCodex = id.startsWith('pin-');
+    const loreLabel = isCodex
+      ? AGE_MODES[state.age].organisms[id.slice(4)]?.title || LORE_NAMES[id]
+      : AGE_MODES[state.age].menuChapters[Number(id.slice(5))] || LORE_NAMES[id];
     sfx?.loreUnlock(isCodex, { delay: sfxDelay });
-    toast({ kind: isCodex ? 'codex' : 'lore', kicker: isCodex ? 'Codex entry found' : 'Lore discovered', text: LORE_NAMES[id] });
+    toast({ kind: isCodex ? 'codex' : 'lore', kicker: isCodex ? 'Codex entry found' : 'Lore discovered', text: loreLabel });
 
     const after = rankFor(n);
     loreRank.textContent = after;
     if (after !== before) {
       setTimeout(() => {
-        sfx?.rankUp(n === 10);
-        toast({ kind: 'rank', kicker: n === 10 ? 'All ten runes awakened' : 'Rank up', text: after, duration: 4200 });
+        sfx?.rankUp(n === MAX_RUNES);
+        toast({ kind: 'rank', kicker: n === MAX_RUNES ? 'All eleven runes awakened' : 'Rank up', text: after, duration: 4200 });
       }, 650);
       liveStatus.textContent = `New rank: ${after}.`;
     }
@@ -294,6 +823,8 @@
   function activateStep(index, { focusTab = false, duration, fromTitle = false } = {}) {
     const i = Math.max(0, Math.min(tabs.length - 1, index));
     state.step = i;
+    state.soilShock = false;
+    syncSoilShockBtn();
     if (!fromTitle) sfx?.chapterSelect(i);
 
     tabs.forEach((tab, k) => {
@@ -316,7 +847,7 @@
     });
     $('.panels').scrollTop = 0;
     chapterPath.style.setProperty('--path-progress', String(i / (tabs.length - 1)));
-    stepCounter.textContent = `Chapter ${ROMAN[i]} of V`;
+    stepCounter.textContent = `Chapter ${ROMAN[i]} of ${ROMAN[tabs.length - 1]}`;
     prevBtn.disabled = i === 0;
     nextBtn.innerHTML = i === tabs.length - 1 ? 'Lore tablets <span aria-hidden="true">↓</span>' : 'Next <span aria-hidden="true">›</span>';
     if (focusTab) tabs[i].focus();
@@ -371,16 +902,6 @@
     btn.append(note);
   }
 
-  // Campfire lines
-  for (const btn of $$('[data-copy-pitch]')) {
-    btn.addEventListener('click', () => {
-      sfx?.copyPitch();
-      navigator.clipboard?.writeText(btn.dataset.copyPitch).catch(() => {});
-      btn.textContent = 'Copied ✓';
-      setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
-    });
-  }
-
   // Mission: camera dives
   for (const btn of $$('[data-goto-cam]')) {
     btn.addEventListener('click', () => {
@@ -426,8 +947,8 @@
     if (sfxDelay > 0) attackSfxTimer = setTimeout(() => sfx?.caterpillarAttack(), sfxDelay);
     else sfx?.caterpillarAttack();
     engine?.triggerAttack();
-    liveStatus.textContent = 'Caterpillars are biting the Elder Fir! An amber distress signal races down its roots and across the fungal web toward the Paper Birch.';
-    if (fromButton) toast({ kind: 'alarm', kicker: 'Caterpillar attack', text: 'The alarm races through the fungal web…' });
+    liveStatus.textContent = 'Caterpillars are biting the Elder Fir! An amber warning signal races down its roots and across the fungal web toward the Paper Birch.';
+    if (fromButton) toast({ kind: 'alarm', kicker: 'Caterpillar attack', text: 'The warning races through the fungal web…' });
   }
   $('#trigger-attack-btn').addEventListener('click', (e) => {
     launchAttack(true);
@@ -436,9 +957,26 @@
 
   function onAttackArrived() {
     sfx?.attackArrived();
-    liveStatus.textContent = 'The warning reached the Paper Birch! Its leaves glow emerald as it brews protective tannins.';
-    if (state.step === 3) toast({ kind: 'alarm', kicker: 'Warning delivered', text: 'The birch brews bitter bug spray' });
+    liveStatus.textContent = 'The warning reached the Paper Birch! Its leaves glow emerald as it brews bitter natural bug-repellent.';
+    if (state.step === 3) toast({ kind: 'alarm', kicker: 'Warning delivered', text: 'The birch brews bitter bug-repellent' });
   }
+
+  // Mission: Chapter VI chemical fertilizer shock vs. living regenerative soil
+  soilShockBtn?.addEventListener('click', () => {
+    state.soilShock = !state.soilShock;
+    sfx?.soilShock(state.soilShock);
+    engine?.setSoilDisrupted(state.soilShock);
+    syncSoilShockBtn();
+    const ch6 = AGE_MODES[state.age].chapters[5];
+    if (state.soilShock) {
+      toast({ kind: 'alarm', kicker: 'Chemical input shock', text: ch6.toastShock, duration: 3600 });
+      liveStatus.textContent = ch6.toastShock;
+    } else {
+      completeQuest(soilShockBtn);
+      toast({ kind: 'lore', kicker: 'Living soil', text: ch6.toastRestore, duration: 3600 });
+      liveStatus.textContent = ch6.toastRestore;
+    }
+  });
 
   // ===========================================================================
   // 6. HUD controls
@@ -505,7 +1043,6 @@
   // ===========================================================================
   // 7. Codex markers
   // ===========================================================================
-  let lastPin = null;
   let switchingPin = false;
   const canPopover = typeof HTMLElement.prototype.showPopover === 'function';
 
@@ -536,7 +1073,7 @@
     });
     pin.addEventListener('click', () => {
       const key = pin.dataset.pin;
-      const info = ORGANISM_INFO[key];
+      const info = AGE_MODES[state.age].organisms[key];
       lastPin = pin;
       $('#codex-tag').textContent = pin.classList.contains('is-discovered') ? info.tag : `Codex entry unlocked · ${info.tag}`;
       $('#codex-title').textContent = info.title;
@@ -560,7 +1097,7 @@
   addEventListener('resize', () => codex.matches?.(':popover-open') && placeCodex());
 
   // ===========================================================================
-  // 8. Layout ↔ 3D view insets, marker projection
+  // 8. Layout <-> 3D view insets, marker projection
   // ===========================================================================
   // Offset* values ignore the slide-in transforms, so this is the settled layout.
   function measureLayout() {
@@ -692,7 +1229,6 @@
       left.setAttribute('preserveAspectRatio', 'xMinYMax meet');
       defs(left, 'leafL');
       const f = 'url(#leafL)';
-      // back layer (slightly lifted tone), then front silhouettes
       frond(left, '#0a2117', [40, 470], [150, 300], [360, 260], 52, 12, 0.9);
       frond(left, '#081b12', [-20, 460], [40, 270], [170, 110], 50, 12, 1);
       broadLeaf(left, '#0b2318', 60, 470, 300, 92, -48, 0.2);
@@ -727,7 +1263,7 @@
     if (state.screen === 'play') sfx?.orbitGrab();
   }, { passive: true });
 
-  for (const details of $$('.riddle')) {
+  for (const details of $$('.riddle, .chapter-sources')) {
     details.addEventListener('toggle', () => sfx?.riddleToggle(details.open));
   }
 
@@ -740,6 +1276,7 @@
   // ===========================================================================
   function initialUi() {
     syncSfxButtons();
+    applyAgeMode(state.age);
     timeLabel.textContent = 'Night';
     timeBtn.setAttribute('aria-label', 'Time of day: Night. Switch to day');
     timeBtn.style.setProperty('--night', '1');
@@ -779,7 +1316,7 @@
       $('#world-fallback').hidden = false;
       canvas.hidden = true;
       engineStatus.classList.add('is-error');
-      engineStatus.textContent = 'The live 3D forest couldn’t load (offline, or WebGL is off). Showing the Blender render instead — the quest still works.';
+      engineStatus.textContent = 'The live 3D forest could not load (offline, or WebGL is off). Showing the Blender render instead, and the quest still works.';
     }
 
     // Stop rendering while the forest is scrolled out of view

@@ -30,7 +30,7 @@
     NOTE.D5, NOTE.E5, NOTE.Fs5, NOTE.A5, NOTE.B5, NOTE.D6
   ];
 
-  const CHAPTER_NOTES = [NOTE.D4, NOTE.E4, NOTE.Fs4, NOTE.A4, NOTE.B4];
+  const CHAPTER_NOTES = [NOTE.D4, NOTE.E4, NOTE.Fs4, NOTE.A4, NOTE.B4, NOTE.D5];
 
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const jitter = (amt = 0.03) => 1 + (Math.random() * 2 - 1) * amt;
@@ -668,20 +668,20 @@
         });
       },
 
-      // Chapter stone selection (I–V)
+      // Chapter stone selection (I–VI)
       chapterSelect(stepIndex = 0) {
-        const idx = clamp(stepIndex, 0, 4);
-        playStoneBody({ pitch: 0.9 + idx * 0.05, gain: 0.1 });
+        const idx = clamp(stepIndex, 0, 5);
+        playStoneBody({ pitch: 0.9 + idx * 0.045, gain: 0.1 });
         playNoise({ dur: 0.09, gain: 0.026, attack: 0.01, freq: 1350, endFreq: 720, q: 1.5, wet: 0.2 });
 
         if (idx === 4) {
-          // Chapter V (The Ghost Bandit): eerie pale glass interval
+          // Chapter V (The Ghost Plant): eerie pale glass interval
           playRuneBell(NOTE.B4, { delay: 0.03, gain: 0.06, decay: 0.75, wet: 0.62, pan: 0.12 });
           playTone({ freq: NOTE.F5, endFreq: NOTE.E5, type: 'sine', gain: 0.042, attack: 0.04, decay: 0.7, delay: 0.1, wet: 0.68, pan: 0.22 });
         } else {
           const root = CHAPTER_NOTES[idx];
           playWoodPluck(root, { delay: 0.02, gain: 0.07, decay: 0.34, wet: 0.42 });
-          playRuneBell(root * 1.5, { delay: 0.075, gain: 0.042, decay: 0.52, wet: 0.5, crystal: false });
+          playRuneBell(root * 1.5, { delay: 0.075, gain: 0.042, decay: 0.52, wet: 0.5, crystal: idx === 5 });
         }
       },
 
@@ -927,6 +927,29 @@
           playWoodPluck(NOTE.D5, { delay: 0.04, gain: 0.048, decay: 0.28, wet: 0.42 });
         } else {
           playTone({ freq: 220, endFreq: 140, type: 'sine', gain: 0.03, attack: 0.003, decay: 0.05, wet: 0.12 });
+        }
+      },
+
+      // Audience age-tier selector chime (gentle pentatonic step: kids = high kalimba, teens = mid, adults = warm low)
+      ageSwitch(mode = 'adults') {
+        const pitchMap = { kids: 1.18, teens: 1.04, adults: 0.92 };
+        const noteMap = { kids: NOTE.A4, teens: NOTE.Fs4, adults: NOTE.D4 };
+        playStoneBody({ pitch: pitchMap[mode] || 1, gain: 0.068 });
+        playWoodPluck(noteMap[mode] || NOTE.D4, { delay: 0.018, gain: 0.052, decay: 0.24, wet: 0.36 });
+      },
+
+      // Chapter VI chemical fertilizer shock vs. living regenerative soil restoration
+      soilShock(isDisrupted) {
+        playStoneBody({ pitch: isDisrupted ? 0.8 : 1.08, gain: 0.085 });
+        if (isDisrupted) {
+          playNoise({ dur: 0.32, gain: 0.04, attack: 0.02, freq: 920, endFreq: 180, q: 1.8, wet: 0.28 });
+          playTone({ freq: NOTE.A3, endFreq: NOTE.D2, type: 'triangle', gain: 0.072, attack: 0.015, decay: 0.55, wet: 0.4, filterFreq: 480 });
+        } else {
+          playNoise({ dur: 0.36, gain: 0.028, attack: 0.05, freq: 340, endFreq: 1350, q: 1.7, wet: 0.45 });
+          [NOTE.D4, NOTE.Fs4, NOTE.A4, NOTE.D5].forEach((f, i) => {
+            playWoodPluck(f, { delay: 0.03 + i * 0.065, gain: 0.056 - i * 0.004, decay: 0.42, wet: 0.5, pan: -0.18 + i * 0.12 });
+          });
+          playRuneBell(NOTE.A5, { delay: 0.28, gain: 0.044, decay: 0.72, wet: 0.65, crystal: true });
         }
       }
     };

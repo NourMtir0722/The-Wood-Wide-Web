@@ -1,0 +1,15 @@
+.DS_Store
+.git
+.gitignore
+.wrangler
+.assetsignore
+wrangler.jsonc
+README.md
+build_wood_wide_web_blender.py
+*.blend
+*.blend1
+*.blend2
+*.glb
+docs/
+renders/overview_3d.png
+renders/root_closeup_3d.png

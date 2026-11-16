@@ -497,9 +497,120 @@ button {
 
 .title-sub {
   font-style: italic;
-  font-size: clamp(1.1rem, 1rem + 0.4vw, 1.35rem);
+  font-size: clamp(1.05rem, 0.96rem + 0.38vw, 1.3rem);
   color: var(--parch-2);
   opacity: 0.88;
+  max-inline-size: 34rem;
+}
+
+.title-menu-wrap {
+  display: grid;
+  justify-items: start;
+  gap: 1.15rem;
+}
+
+/* Audience age selector (Title menu, Quest journal, Lore section) */
+.age-picker {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-inline-size: 0;
+}
+
+.age-picker-label {
+  padding: 0;
+  margin-block-end: 0.42rem;
+  font-family: var(--font-carved);
+  font-size: 0.74rem;
+  letter-spacing: 0.24em;
+  color: var(--parch-dim);
+}
+
+.age-pills {
+  display: inline-grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 0.2rem;
+  padding: 0.26rem;
+  border-radius: 13px;
+  background:
+    var(--grain),
+    linear-gradient(180deg, rgb(34 45 41 / 0.92), rgb(18 25 22 / 0.94));
+  background-size: 220px 220px, auto;
+  box-shadow:
+    inset 0 2px 5px rgb(0 0 0 / 0.55),
+    0 1px 0 rgb(255 255 255 / 0.08),
+    0 0 0 1px var(--stone-edge),
+    0 8px 20px rgb(0 0 0 / 0.4);
+}
+
+.age-picker--journal .age-pills {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0.22rem;
+  border-radius: 11px;
+}
+
+.age-picker--lore {
+  justify-self: center;
+  margin-block-start: 0.35rem;
+}
+
+.age-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 2.15rem;
+  min-inline-size: 24px;
+  padding: 0.32rem 0.9rem;
+  border-radius: 9px;
+  font-family: var(--font-carved);
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  color: rgb(239 230 207 / 0.68);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color 160ms ease, background 160ms ease, box-shadow 180ms ease, text-shadow 180ms ease;
+}
+
+.age-picker--journal .age-pill {
+  min-block-size: 1.9rem;
+  padding: 0.24rem 0.45rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+.age-pill:hover {
+  color: var(--parch);
+  background: rgb(255 255 255 / 0.05);
+}
+
+.age-pill:has(input:checked) {
+  color: var(--rune-strong);
+  text-shadow: 0 0 10px var(--rune-glow);
+  background:
+    var(--grain),
+    linear-gradient(180deg, #354741, #222e2a);
+  background-size: 220px 220px, auto;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.16),
+    inset 0 -2px 4px rgb(0 0 0 / 0.35),
+    0 0 0 1px rgb(142 247 226 / 0.48),
+    0 0 14px rgb(110 240 214 / 0.2);
+}
+
+.age-pill:has(input:focus-visible) {
+  outline: 2px solid var(--rune);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .age-pill,
+  .age-picker--journal .age-pill {
+    min-block-size: 44px;
+    min-inline-size: 44px;
+  }
 }
 
 .menu-list {
@@ -706,7 +817,7 @@ kbd {
   transition: background 300ms ease, box-shadow 300ms ease;
 }
 
-.rune-sockets li:nth-child(5) {
+.rune-sockets li:nth-child(6) {
   margin-inline-end: 0.35rem;
 }
 
@@ -1024,18 +1135,18 @@ kbd {
   display: none;
 }
 
-/* Chapter path: five rune stones joined by a vine */
+/* Chapter path: six rune stones joined by a vine */
 .chapter-path {
   position: relative;
   display: flex;
   justify-content: space-between;
-  padding: 0.35rem 0.2rem 0.5rem;
+  padding: 0.3rem 0.15rem 0.45rem;
 }
 
 .chapter-path::before {
   content: "";
   position: absolute;
-  inset-inline: 1.6rem;
+  inset-inline: 1.4rem;
   top: calc(50% - 1px);
   block-size: 3px;
   border-radius: 3px;
@@ -1046,10 +1157,10 @@ kbd {
 .chapter-path::after {
   content: "";
   position: absolute;
-  left: 1.6rem;
+  left: 1.4rem;
   top: calc(50% - 1px);
   block-size: 3px;
-  inline-size: calc((100% - 3.2rem) * var(--path-progress, 0));
+  inline-size: calc((100% - 2.8rem) * var(--path-progress, 0));
   border-radius: 3px;
   background: linear-gradient(90deg, var(--moss), var(--moss-light));
   box-shadow: 0 0 8px rgb(160 220 90 / 0.5);
@@ -1061,8 +1172,8 @@ kbd {
   z-index: 1;
   display: grid;
   place-items: center;
-  inline-size: 2.75rem;
-  block-size: 2.75rem;
+  inline-size: 2.45rem;
+  block-size: 2.45rem;
   padding: 0;
   border: 0;
   cursor: pointer;
@@ -1172,53 +1283,63 @@ kbd {
   font-weight: 700;
 }
 
-/* Campfire line — carved inscription */
-.pitch {
-  margin: 0;
-  padding: 0.75rem 0.9rem 0.85rem;
-  border-radius: 12px;
-  background: rgb(0 0 0 / 0.24);
-  box-shadow:
-    inset 0 2px 6px rgb(0 0 0 / 0.45),
-    0 1px 0 rgb(255 255 255 / 0.06);
-  border-inline-start: 2px solid rgb(142 247 226 / 0.5);
-}
-
-.pitch figcaption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-block-end: 0.3rem;
-  font-family: var(--font-carved);
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
-  color: var(--parch-dim);
-}
-
-.pitch-copy {
-  border: 0;
-  padding: 0.12rem 0.55rem;
-  border-radius: 6px;
-  background: rgb(255 255 255 / 0.06);
-  color: var(--parch-dim);
-  font-family: var(--font-carved);
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  cursor: pointer;
-}
-
-.pitch-copy:hover {
+.sci-term {
   color: var(--rune-strong);
-  background: rgb(142 247 226 / 0.1);
+  font-weight: 500;
+  text-decoration: underline dotted rgb(142 247 226 / 0.65);
+  text-underline-offset: 3px;
 }
 
-.pitch blockquote {
+/* Pocket dictionary entries for scientific words (Adults mode) */
+.sci-dict {
   margin: 0;
+  padding: 0.68rem 0.85rem;
+  border-radius: 12px;
+  background: rgb(0 0 0 / 0.26);
+  box-shadow:
+    inset 0 2px 6px rgb(0 0 0 / 0.42),
+    0 1px 0 rgb(255 255 255 / 0.05);
+  border-inline-start: 2px solid rgb(142 247 226 / 0.5);
+  display: grid;
+  gap: 0.52rem;
+}
+
+.sci-dict > div {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.sci-dict > div + div {
+  padding-block-start: 0.48rem;
+  border-block-start: 1px dashed rgb(255 255 255 / 0.1);
+}
+
+.sci-dict dt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.sci-dict dfn {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.96rem;
+  letter-spacing: 0.02em;
+  color: var(--rune-strong);
+}
+
+.dict-pos {
   font-style: italic;
-  font-size: 1.04rem;
-  line-height: 1.45;
-  color: var(--parch);
+  font-size: 0.82rem;
+  color: var(--parch-dim);
+}
+
+.sci-dict dd {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.42;
+  color: var(--parch-2);
 }
 
 /* Field mission objective */
@@ -1301,6 +1422,88 @@ kbd {
 
 .quest-action--danger .quest-check {
   border-color: var(--alarm);
+}
+
+.quest-action--restore {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.14),
+    inset 0 -3px 0 rgb(0 0 0 / 0.32),
+    0 0 0 1px rgb(142 247 226 / 0.58),
+    0 0 20px rgb(110 240 214 / 0.18),
+    0 5px 12px rgb(0 0 0 / 0.35);
+}
+
+.quest-action--restore .quest-check {
+  border-color: var(--rune);
+  box-shadow: 0 0 10px var(--rune-glow);
+}
+
+/* Adult peer-reviewed source links inside chapters (compact disclosure) */
+.chapter-sources {
+  border-radius: 10px;
+  background: rgb(0 0 0 / 0.2);
+  border: 1px solid rgb(142 247 226 / 0.15);
+}
+
+.chapter-sources summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-block-size: 2.1rem;
+  padding: 0.42rem 0.78rem;
+  cursor: pointer;
+  font-family: var(--font-carved);
+  font-size: 0.69rem;
+  letter-spacing: 0.17em;
+  color: var(--rune);
+  opacity: 0.9;
+  user-select: none;
+}
+
+.chapter-sources summary::-webkit-details-marker {
+  display: none;
+}
+
+.chapter-sources summary::after {
+  content: "▾";
+  font-size: 0.85rem;
+  line-height: 1;
+  transition: rotate 220ms ease;
+}
+
+.chapter-sources[open] summary::after {
+  rotate: 180deg;
+}
+
+.chapter-sources summary:hover {
+  color: var(--rune-strong);
+  opacity: 1;
+}
+
+.sources-list {
+  margin: 0;
+  padding: 0.1rem 0.78rem 0.62rem;
+  list-style: none;
+  display: grid;
+  gap: 0.34rem;
+}
+
+.sources-list a {
+  display: inline-block;
+  font-size: 0.87rem;
+  line-height: 1.35;
+  color: var(--parch-2);
+  text-decoration: underline;
+  text-decoration-color: rgb(142 247 226 / 0.38);
+  text-underline-offset: 2px;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+
+.sources-list a:hover {
+  color: var(--rune-strong);
+  text-decoration-color: var(--rune);
 }
 
 /* Sunlight slider */
@@ -2069,12 +2272,19 @@ kbd {
 
 .tablet-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
-  gap: clamp(1.4rem, 3vw, 2.2rem);
-  inline-size: min(100%, 72rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.2rem), 1fr));
+  gap: clamp(1.3rem, 2.5vw, 2rem);
+  inline-size: min(100%, 76rem);
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+@media (min-width: 640px) and (max-width: 1120px) {
+  .tablet-row {
+    grid-template-columns: repeat(2, 1fr);
+    inline-size: min(100%, 48rem);
+  }
 }
 
 .lore-tablet {
@@ -2202,6 +2412,95 @@ kbd {
   color: #7a3f0c;
 }
 
+/* Adult verified research library & regenerative call to action */
+.research-shelf {
+  inline-size: min(100%, 66rem);
+  padding: clamp(1.8rem, 3.5vw, 2.6rem) clamp(1.3rem, 3vw, 2.4rem);
+  display: grid;
+  gap: 1.5rem;
+}
+
+.research-head {
+  display: grid;
+  gap: 0.45rem;
+  text-align: center;
+  max-inline-size: 42rem;
+  justify-self: center;
+}
+
+.research-title {
+  font-family: var(--font-logo);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.1rem);
+  color: var(--rune-strong);
+  text-shadow: 0 0 12px var(--rune-glow);
+}
+
+.research-sub {
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--parch-dim);
+}
+
+.research-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr));
+  gap: 0.95rem;
+}
+
+.research-card {
+  display: grid;
+  align-content: start;
+  gap: 0.32rem;
+  block-size: 100%;
+  padding: 0.95rem 1.05rem;
+  border-radius: 12px;
+  background: rgb(0 0 0 / 0.28);
+  border: 1px solid rgb(142 247 226 / 0.16);
+  color: var(--parch-2);
+  text-decoration: none;
+  font-size: 0.95rem;
+  line-height: 1.42;
+  transition: border-color 180ms ease, background 180ms ease, translate 150ms ease, box-shadow 180ms ease;
+}
+
+.research-card:hover {
+  background: rgb(142 247 226 / 0.06);
+  border-color: rgb(142 247 226 / 0.5);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 0.35), 0 0 16px rgb(110 240 214 / 0.12);
+  translate: 0 -2px;
+}
+
+.research-cite {
+  font-family: var(--font-carved);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--rune);
+}
+
+.research-card strong {
+  color: #f7efdb;
+  font-size: 1.04rem;
+  line-height: 1.25;
+}
+
+.research-cta {
+  padding: 0.9rem 1.15rem;
+  border-radius: 12px;
+  background: rgb(0 0 0 / 0.25);
+  border-inline-start: 3px solid var(--ember);
+  color: var(--parch);
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
+
+.research-cta strong {
+  color: #ffe2a0;
+}
+
 .back-to-game {
   margin-block-start: 1rem;
 }
@@ -2258,7 +2557,7 @@ kbd {
     block-size: 7px;
   }
 
-  .rune-sockets li:nth-child(5) {
+  .rune-sockets li:nth-child(6) {
     margin-inline-end: 0.15rem;
   }
 
@@ -2312,16 +2611,15 @@ kbd {
   }
 
   .chapter-path [role="tab"] {
-    inline-size: 2.4rem;
-    block-size: 2.4rem;
+    inline-size: 2.15rem;
+    block-size: 2.15rem;
   }
 
   .chapter-title {
     font-size: 1.22rem;
   }
 
-  .chapter-text,
-  .pitch blockquote {
+  .chapter-text {
     font-size: 0.98rem;
   }
 
@@ -2369,6 +2667,11 @@ kbd {
 
   .title-lockup {
     justify-items: center;
+  }
+
+  .title-menu-wrap {
+    justify-items: center;
+    gap: 0.85rem;
   }
 
   .title-kicker {
@@ -2423,7 +2726,8 @@ kbd {
 @media (forced-colors: active) {
   .hud-icon[aria-pressed="true"],
   .view-btn[aria-pressed="true"],
-  .chapter-path [role="tab"][aria-selected="true"] {
+  .chapter-path [role="tab"][aria-selected="true"],
+  .age-pill:has(input:checked) {
     outline: 2px solid Highlight;
   }
 }
